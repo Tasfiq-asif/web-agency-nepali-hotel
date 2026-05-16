@@ -1,0 +1,136 @@
+@import "tailwindcss";
+
+/* ─── Mountain Nest Hotel — Design Tokens ─── */
+
+@theme inline {
+  /* Colors */
+  --color-canvas:         #F5F0E8;
+  --color-ink:            #1C2B1A;
+  --color-accent:         #C4704F;
+  --color-surface-dark:   #2D4A2A;
+  --color-warm-mid:       #8B7355;
+  --color-hairline:       #DDD8CE;
+  --color-text-secondary: #6B6558;
+  --color-text-inverse:   #F5F0E8;
+
+  /* Typography */
+  --font-display: var(--font-fraunces), Georgia, serif;
+  --font-body:    var(--font-jakarta), system-ui, sans-serif;
+  --font-mono:    var(--font-dm-mono), monospace;
+
+  /* Fluid type scale */
+  --text-display-xl: clamp(4.5rem, 10vw, 10rem);
+  --text-display-lg: clamp(3rem, 6vw, 5.5rem);
+  --text-display-md: clamp(2.25rem, 4vw, 4rem);
+  --text-display-sm: clamp(1.5rem, 2vw, 3rem);
+  --text-body-lg:    clamp(1.125rem, 1.4vw, 1.375rem);
+  --text-body:       clamp(1rem, 1.2vw, 1.125rem);
+  --text-body-sm:    clamp(0.875rem, 1vw, 1rem);
+  --text-label:      0.6875rem;
+  --text-nav:        clamp(0.8125rem, 1vw, 0.9375rem);
+  --text-button:     clamp(0.75rem, 0.9vw, 0.875rem);
+
+  /* Motion tokens */
+  --ease-reveal:      cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-transition:  cubic-bezier(0.76, 0, 0.24, 1);
+  --ease-nav:         cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* Spacing */
+  --section-gap: clamp(5rem, 10vw, 9rem);
+  --container-px: clamp(1.5rem, 5vw, 5rem);
+}
+
+/* ─── Base ─── */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: auto; /* Lenis handles smooth scroll */
+}
+
+body {
+  background-color: var(--color-canvas);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  font-size: var(--text-body);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+/* ─── Typography defaults ─── */
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  font-weight: 300;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+}
+
+p {
+  line-height: 1.65;
+  color: var(--color-text-secondary);
+}
+
+/* ─── Section label utility ─── */
+
+.label {
+  font-family: var(--font-mono);
+  font-size: var(--text-label);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+}
+
+/* ─── Container ─── */
+
+.container {
+  width: 100%;
+  max-width: 1440px;
+  margin-inline: auto;
+  padding-inline: var(--container-px);
+}
+
+/* ─── Section spacing ─── */
+
+.section {
+  padding-block: var(--section-gap);
+}
+
+/* ─── Theme surface variants ─── */
+
+.bg-canvas   { background-color: var(--color-canvas); color: var(--color-ink); }
+.bg-dark     { background-color: var(--color-ink); color: var(--color-text-inverse); }
+.bg-forest   { background-color: var(--color-surface-dark); color: var(--color-text-inverse); }
+.bg-accent   { background-color: var(--color-accent); color: var(--color-text-inverse); }
+
+/* ─── Image defaults ─── */
+
+img, video {
+  display: block;
+  max-width: 100%;
+}
+
+/* ─── Selection ─── */
+
+::selection {
+  background-color: var(--color-accent);
+  color: var(--color-text-inverse);
+}
+
+/* ─── Starlyn compat aliases (used by copied animation components) ─── */
+:root {
+  --dark:         var(--color-ink);
+  --text-inverse: var(--color-text-inverse);
+}
+
+/* ─── Scrollbar (subtle) ─── */
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--color-canvas); }
+::-webkit-scrollbar-thumb { background: var(--color-hairline); border-radius: 3px; }
