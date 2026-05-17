@@ -38,7 +38,7 @@ export function GalleryMasonry() {
   }, []);
 
   return (
-    <section ref={sectionRef} className="section bg-forest">
+    <section ref={sectionRef} className="section bg-canvas">
       <div className="container">
         {/* Section header */}
         <div style={{ textAlign: 'center', marginBottom: 'clamp(3rem, 5vw, 5rem)' }}>
@@ -49,7 +49,7 @@ export function GalleryMasonry() {
             style={{
               fontSize: 'var(--text-display-md)',
               fontWeight: 300,
-              color: 'var(--color-text-inverse)',
+              color: 'var(--color-ink)',
               maxWidth: '20ch',
               marginInline: 'auto',
             }}
@@ -121,8 +121,8 @@ export function GalleryMasonry() {
               fontSize: 'var(--text-button)',
               letterSpacing: '0.12em',
               textTransform: 'uppercase',
-              color: 'var(--color-text-inverse)',
-              borderBottom: '1px solid rgba(245,240,232,0.25)',
+              color: 'var(--color-ink)',
+              borderBottom: '1px solid var(--color-hairline)',
               paddingBottom: 4,
               textDecoration: 'none',
               transition: 'border-color 0.3s',

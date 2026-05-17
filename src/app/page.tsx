@@ -17,8 +17,8 @@ export default function Home() {
       <RoomCardGrid />
       <FeatureSplit />
       <ActivityGrid />
-      <TestimonialCarousel />
       <GalleryMasonry />
+      <TestimonialCarousel />
       <CTASection />
     </main>
   );

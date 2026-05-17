@@ -40,7 +40,7 @@ export function FeatureSplit() {
   }, []);
 
   return (
-    <section ref={sectionRef} className="section bg-canvas">
+    <section ref={sectionRef} className="section bg-forest">
       <div className="container">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
           {/* Image */}
@@ -64,7 +64,7 @@ export function FeatureSplit() {
               style={{
                 fontSize: 'var(--text-display-md)',
                 fontWeight: 300,
-                color: 'var(--color-ink)',
+                color: 'var(--color-canvas)',
                 marginBottom: 'clamp(1.5rem, 3vw, 2rem)',
               }}
             >
@@ -76,7 +76,7 @@ export function FeatureSplit() {
             <p
               style={{
                 fontSize: 'var(--text-body-lg)',
-                color: 'var(--color-text-secondary)',
+                color: 'rgba(245,240,232,0.75)',
                 lineHeight: 1.7,
                 maxWidth: '42ch',
                 marginBottom: 'clamp(1rem, 2vw, 1.5rem)',
@@ -89,7 +89,7 @@ export function FeatureSplit() {
             <p
               style={{
                 fontSize: 'var(--text-body)',
-                color: 'var(--color-text-secondary)',
+                color: 'rgba(245,240,232,0.6)',
                 lineHeight: 1.7,
                 maxWidth: '42ch',
                 marginBottom: 'clamp(2rem, 4vw, 3rem)',
@@ -106,8 +106,8 @@ export function FeatureSplit() {
                 fontSize: 'var(--text-button)',
                 letterSpacing: '0.12em',
                 textTransform: 'uppercase',
-                color: 'var(--color-ink)',
-                borderBottom: '1px solid var(--color-hairline)',
+                color: 'var(--color-canvas)',
+                borderBottom: '1px solid rgba(245,240,232,0.3)',
                 paddingBottom: 4,
                 textDecoration: 'none',
                 transition: 'border-color 0.3s',

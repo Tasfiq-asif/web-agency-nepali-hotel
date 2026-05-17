@@ -3,45 +3,7 @@
 import { useEffect, useRef } from 'react';
 import { gsap } from '@/lib/gsap';
 import { RoomCard } from '@/components/ui/RoomCard';
-
-const ROOMS = [
-  {
-    slug: 'himalayan-suite',
-    name: 'Himalayan Suite',
-    tagline: 'Panoramic mountain views from your private balcony',
-    imageSrc: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=800&q=80',
-    amenities: ['Mountain View', 'Balcony', 'Fireplace', 'King Bed'],
-    maxGuests: 3,
-    pricePerNight: 180,
-  },
-  {
-    slug: 'forest-retreat',
-    name: 'Forest Retreat',
-    tagline: 'Nestled among rhododendrons with floor-to-ceiling windows',
-    imageSrc: 'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=800&q=80',
-    amenities: ['Forest View', 'Window Seat', 'Rain Shower', 'Queen Bed'],
-    maxGuests: 2,
-    pricePerNight: 140,
-  },
-  {
-    slug: 'summit-lodge',
-    name: 'Summit Lodge',
-    tagline: 'Our most spacious suite with a private terrace and hot tub',
-    imageSrc: 'https://images.unsplash.com/photo-1602002418082-a4443e081dd1?w=800&q=80',
-    amenities: ['Terrace', 'Hot Tub', 'Living Area', 'King Bed'],
-    maxGuests: 4,
-    pricePerNight: 260,
-  },
-  {
-    slug: 'valley-room',
-    name: 'Valley Room',
-    tagline: 'Warm wood interiors with views over the river valley',
-    imageSrc: 'https://images.unsplash.com/photo-1566665797739-1674de7a421a?w=800&q=80',
-    amenities: ['Valley View', 'Writing Desk', 'Rain Shower', 'Twin Beds'],
-    maxGuests: 2,
-    pricePerNight: 110,
-  },
-];
+import { ROOMS } from '@/data/rooms';
 
 export function RoomCardGrid() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -91,7 +53,7 @@ export function RoomCardGrid() {
 
         {/* Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-16">
-          {ROOMS.map((room) => (
+          {ROOMS.slice(0, 4).map((room) => (
             <RoomCard key={room.slug} {...room} />
           ))}
         </div>

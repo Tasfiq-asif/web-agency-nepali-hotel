@@ -79,7 +79,7 @@ export function TestimonialCarousel() {
   const current = TESTIMONIALS[active];
 
   return (
-    <section ref={sectionRef} className="section bg-canvas">
+    <section ref={sectionRef} className="section bg-forest">
       <div className="container">
         <div className="testimonial-inner" style={{ textAlign: 'center', maxWidth: '52rem', marginInline: 'auto' }}>
           {/* Label */}
@@ -95,7 +95,7 @@ export function TestimonialCarousel() {
               fontSize: 'var(--text-display-sm)',
               fontWeight: 300,
               fontStyle: 'italic',
-              color: 'var(--color-ink)',
+              color: 'var(--color-canvas)',
               lineHeight: 1.4,
               marginBottom: 'clamp(2rem, 4vw, 3rem)',
               minHeight: '8rem',
@@ -112,7 +112,7 @@ export function TestimonialCarousel() {
                 fontFamily: 'var(--font-body)',
                 fontSize: 'var(--text-body)',
                 fontWeight: 500,
-                color: 'var(--color-ink)',
+                color: 'var(--color-canvas)',
                 marginBottom: '0.25rem',
               }}
             >
@@ -123,7 +123,7 @@ export function TestimonialCarousel() {
                 fontFamily: 'var(--font-mono)',
                 fontSize: 'var(--text-label)',
                 letterSpacing: '0.1em',
-                color: 'var(--color-text-secondary)',
+                color: 'rgba(245,240,232,0.6)',
               }}
             >
               {current.origin} · {current.stay}
@@ -142,7 +142,7 @@ export function TestimonialCarousel() {
                   height: 8,
                   borderRadius: 4,
                   border: 'none',
-                  background: i === active ? 'var(--color-accent)' : 'var(--color-hairline)',
+                  background: i === active ? 'var(--color-accent)' : 'rgba(245,240,232,0.25)',
                   cursor: 'pointer',
                   transition: 'all 0.4s cubic-bezier(0.22, 1, 0.36, 1)',
                 }}

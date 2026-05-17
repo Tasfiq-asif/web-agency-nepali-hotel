@@ -1,21 +1,22 @@
 import type { Metadata } from 'next';
-import { Fraunces, Plus_Jakarta_Sans, DM_Mono } from 'next/font/google';
+import { Cormorant, Jost, DM_Mono } from 'next/font/google';
 import './globals.css';
 import { SmoothScroll } from '@/components/animations/SmoothScroll';
 import { MotionProvider } from '@/components/animations/MotionProvider';
 import { Preloader } from '@/components/animations/Preloader';
+import { Navbar } from '@/components/layout/Navbar';
+import { Footer } from '@/components/layout/Footer';
 
-const fraunces = Fraunces({
-  variable: '--font-fraunces',
+const cormorant = Cormorant({
+  variable: '--font-cormorant',
   subsets: ['latin'],
-  axes: ['opsz', 'SOFT', 'WONK'],
-  weight: 'variable',
+  weight: ['300', '400', '500', '600'],
   style: ['normal', 'italic'],
   display: 'swap',
 });
 
-const jakarta = Plus_Jakarta_Sans({
-  variable: '--font-jakarta',
+const jost = Jost({
+  variable: '--font-jost',
   subsets: ['latin'],
   weight: ['300', '400', '500', '600'],
   display: 'swap',
@@ -50,12 +51,16 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${fraunces.variable} ${jakarta.variable} ${dmMono.variable}`}
+      className={`${cormorant.variable} ${jost.variable} ${dmMono.variable}`}
     >
       <body>
         <Preloader />
+        <Navbar />
         <SmoothScroll>
-          <MotionProvider>{children}</MotionProvider>
+          <MotionProvider>
+            {children}
+            <Footer />
+          </MotionProvider>
         </SmoothScroll>
       </body>
     </html>

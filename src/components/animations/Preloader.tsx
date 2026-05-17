@@ -6,55 +6,36 @@ import { markPreloaderDone } from '@/lib/preloader';
 
 export function Preloader() {
   const overlayRef = useRef<HTMLDivElement>(null);
-  const countRef   = useRef<HTMLDivElement>(null);
+  const fillRef = useRef<SVGRectElement>(null);
+  const mountainRef = useRef<SVGSVGElement>(null);
 
   useEffect(() => {
     const overlay = overlayRef.current!;
-    const countEl = countRef.current!;
+    const fill = fillRef.current!;
+    const mountain = mountainRef.current!;
 
-    // Skip entirely for reduced-motion users
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       overlay.style.display = 'none';
       markPreloaderDone();
       return;
     }
 
-    let progress = 0;
+    const tl = gsap.timeline({
+      onComplete: () => {
+        overlay.style.display = 'none';
+        markPreloaderDone();
+      },
+    });
 
-    const tick = setInterval(() => {
-      const remaining = 100 - progress;
-      progress += Math.max(0.5, Math.random() * Math.min(remaining * 0.25, 9));
-      progress  = Math.min(progress, 100);
-      countEl.textContent = Math.floor(progress) + '%';
+    tl.fromTo(
+      fill,
+      { attr: { y: 200, height: 0 } },
+      { attr: { y: 0, height: 200 }, duration: 0.8, ease: 'power2.out' }
+    )
+      .to(mountain, { opacity: 0, y: -12, duration: 0.2, ease: 'power2.in' }, '+=0.1')
+      .to(overlay, { yPercent: -100, duration: 0.5, ease: 'power3.inOut' }, '-=0.1');
 
-      if (progress >= 100) {
-        clearInterval(tick);
-
-        // Brief pause at 100% so the eye registers it
-        setTimeout(() => {
-          gsap.timeline({
-            onComplete: () => {
-              overlay.style.display = 'none';
-              markPreloaderDone();
-            },
-          })
-            .to(countEl, {
-              opacity: 0,
-              y: -14,
-              duration: 0.3,
-              ease: 'power2.in',
-            })
-            // Curtain wipes upward off screen
-            .to(overlay, {
-              yPercent: -100,
-              duration: 0.9,
-              ease: 'power4.inOut',
-            }, '+=0.05');
-        }, 180);
-      }
-    }, 75);
-
-    return () => clearInterval(tick);
+    return () => { tl.kill(); };
   }, []);
 
   return (
@@ -65,7 +46,7 @@ export function Preloader() {
         position: 'fixed',
         inset: 0,
         zIndex: 99999,
-        background: 'var(--dark)',       // #0A0A0A — matches hero, no flash
+        background: 'var(--dark)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -73,22 +54,42 @@ export function Preloader() {
         willChange: 'transform',
       }}
     >
-      <span
-        ref={countRef}
-        style={{
-          fontFamily:         'var(--font-display)',
-          fontSize:           'clamp(5rem, 14vw, 12rem)',
-          fontWeight:         600,
-          letterSpacing:      '-0.04em',
-          lineHeight:         1,
-          color:              'var(--text-inverse)',
-          fontVariantNumeric: 'tabular-nums',
-          userSelect:         'none',
-          willChange:         'opacity, transform',
-        }}
+      <svg
+        ref={mountainRef}
+        viewBox="0 0 240 200"
+        width="120"
+        height="100"
+        fill="none"
+        style={{ willChange: 'opacity, transform' }}
       >
-        0%
-      </span>
+        <defs>
+          <clipPath id="mountain-clip">
+            <path d="M120 20 L40 180 H200 Z" />
+            <path d="M175 60 L130 180 H220 Z" />
+          </clipPath>
+        </defs>
+        <path
+          d="M120 20 L40 180 H200 Z"
+          stroke="var(--color-warm-mid)"
+          strokeWidth="1.5"
+          opacity="0.3"
+        />
+        <path
+          d="M175 60 L130 180 H220 Z"
+          stroke="var(--color-warm-mid)"
+          strokeWidth="1.5"
+          opacity="0.3"
+        />
+        <rect
+          ref={fillRef}
+          x="0"
+          y="200"
+          width="240"
+          height="0"
+          fill="var(--color-accent)"
+          clipPath="url(#mountain-clip)"
+        />
+      </svg>
     </div>
   );
 }

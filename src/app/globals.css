@@ -14,8 +14,8 @@
   --color-text-inverse:   #F5F0E8;
 
   /* Typography */
-  --font-display: var(--font-fraunces), Georgia, serif;
-  --font-body:    var(--font-jakarta), system-ui, sans-serif;
+  --font-display: var(--font-cormorant), Georgia, serif;
+  --font-body:    var(--font-jost), system-ui, sans-serif;
   --font-mono:    var(--font-dm-mono), monospace;
 
   /* Fluid type scale */
@@ -67,9 +67,9 @@ body {
 
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-display);
-  font-weight: 300;
+  font-weight: 400;
   line-height: 1.1;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.02em;
 }
 
 p {
@@ -127,6 +127,9 @@ img, video {
 :root {
   --dark:         var(--color-ink);
   --text-inverse: var(--color-text-inverse);
+  --cream:        var(--color-canvas);
+  --border-cream: var(--color-hairline);
+  --gold:         var(--color-accent);
 }
 
 /* ─── Scrollbar (subtle) ─── */
@@ -134,3 +137,10 @@ img, video {
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: var(--color-canvas); }
 ::-webkit-scrollbar-thumb { background: var(--color-hairline); border-radius: 3px; }
+
+/* ─── Hero scroll indicator ─── */
+
+@keyframes scrollPulse {
+  0%, 100% { opacity: 0.4; transform: scaleY(1); }
+  50%      { opacity: 1;   transform: scaleY(1.2); transform-origin: top; }
+}
