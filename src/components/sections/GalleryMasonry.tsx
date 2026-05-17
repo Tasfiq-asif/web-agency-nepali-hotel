@@ -4,12 +4,12 @@ import { useEffect, useRef } from 'react';
 import { gsap } from '@/lib/gsap';
 
 const GALLERY_ITEMS = [
-  { src: '/images/gallery/placeholder-1.svg', alt: 'Mountain vista from the terrace', span: 'tall' },
-  { src: '/images/gallery/placeholder-2.svg', alt: 'Dining room by candlelight', span: 'normal' },
-  { src: '/images/gallery/placeholder-3.svg', alt: 'Suite interior with Himalayan views', span: 'normal' },
-  { src: '/images/gallery/placeholder-4.svg', alt: 'Sunrise trek above the clouds', span: 'tall' },
-  { src: '/images/gallery/placeholder-5.svg', alt: 'Mountain herb garden', span: 'normal' },
-  { src: '/images/gallery/placeholder-6.svg', alt: 'Evening bonfire with guests', span: 'normal' },
+  { src: 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800&q=80', alt: 'Mountain vista from the terrace', span: 'tall' },
+  { src: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800&q=80', alt: 'Dining room by candlelight', span: 'normal' },
+  { src: 'https://images.unsplash.com/photo-1590490360182-c33d57733427?w=800&q=80', alt: 'Suite interior with Himalayan views', span: 'normal' },
+  { src: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800&q=80', alt: 'Sunrise trek above the clouds', span: 'tall' },
+  { src: 'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=800&q=80', alt: 'Mountain herb garden', span: 'normal' },
+  { src: 'https://images.unsplash.com/photo-1475483768296-6163e8f4a9c5?w=800&q=80', alt: 'Evening gathering with mountain backdrop', span: 'normal' },
 ];
 
 export function GalleryMasonry() {
