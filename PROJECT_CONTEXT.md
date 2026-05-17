@@ -1,6 +1,6 @@
 # Mountain Nest Hotel — Build Context
 
-Generated: 2026-05-16 | Last updated: 2026-05-16
+Generated: 2026-05-16 | Last updated: 2026-05-17 (Sprint 4.3 complete)
 
 ---
 
@@ -29,7 +29,7 @@ Generated: 2026-05-16 | Last updated: 2026-05-16
 | Email | **Resend** | Booking inquiry confirmations + admin notifications |
 | Image upload | **Uploadthing** | Admin gallery + room photo uploads |
 | SEO | **next-sitemap** | Auto sitemap generation |
-| Fonts | **Fraunces** + **Plus Jakarta Sans** | Both Google Fonts — load via next/font |
+| Fonts | **Cormorant** + **Jost** + **DM Mono** | All Google Fonts — load via next/font |
 
 ---
 
@@ -76,8 +76,8 @@ Generated: 2026-05-16 | Last updated: 2026-05-16
 --text-secondary: #6B6558;   /* supporting text */
 
 /* Typography */
---font-display: 'Fraunces', Georgia, serif;
---font-body:    'Plus Jakarta Sans', system-ui, sans-serif;
+--font-display: 'Cormorant', Georgia, serif;
+--font-body:    'Jost', system-ui, sans-serif;
 --font-mono:    'DM Mono', monospace;
 
 /* Animation preset: luxury */
@@ -199,20 +199,20 @@ sessions          — managed by BetterAuth
 ## Phase & Sprint Status
 
 ### Phase 0: Discovery & Spec ✅
-### Phase 1: Foundation ⏳
-  - Sprint 1.1: Repo init + design tokens (globals.css, tailwind.config.ts) ⏳
-  - Sprint 1.2: SiteShell + providers + lib/ (copy from Starlyn) ⏳
-  - Sprint 1.3: Database schema + Drizzle setup + BetterAuth ⏳
+### Phase 1: Foundation ✅
+  - Sprint 1.1: Repo init + design tokens (globals.css) ✅
+  - Sprint 1.2: SiteShell + providers + lib/ (copy from Starlyn) ✅
+  - Sprint 1.3: Database schema + Drizzle setup + BetterAuth ✅
 ### Phase 2: Navigation + Footer ⏳
-  - Sprint 2.1: Navbar ⏳
-  - Sprint 2.2: FooterMinimal ⏳
+  - Sprint 2.1: Navbar ✅
+  - Sprint 2.2: FooterMinimal ✅
 ### Phase 3: Hero & Shell ⏳
-  - Sprint 3.1: HeroFullscreen ⏳
-  - Sprint 3.2: IntroStatement + StatStrip + CTASection ⏳
-### Phase 4: Core Homepage Sections ⏳
-  - Sprint 4.1: RoomCardGrid + RoomCard ⏳
-  - Sprint 4.2: FeatureSplit (dining) + ActivityGrid ⏳
-  - Sprint 4.3: TestimonialCarousel + GalleryMasonry ⏳
+  - Sprint 3.1: HeroFullscreen ✅
+  - Sprint 3.2: IntroStatement + StatStrip + CTASection ✅
+### Phase 4: Core Homepage Sections ✅
+  - Sprint 4.1: RoomCardGrid + RoomCard ✅
+  - Sprint 4.2: FeatureSplit (dining) + ActivityGrid ✅
+  - Sprint 4.3: TestimonialCarousel + GalleryMasonry ✅
 ### Phase 5: Rooms Pages ⏳
   - Sprint 5.1: Rooms listing page ⏳
   - Sprint 5.2: Room detail page ⏳
@@ -243,14 +243,51 @@ sessions          — managed by BetterAuth
 - **2026-05-16** — Auth: BetterAuth chosen over NextAuth. Pairs natively with Drizzle, simpler session management for single-admin use case.
 - **2026-05-16** — Payment: No Stripe for now. Booking model is inquiry-to-confirm. Admin confirms manually, sends payment details separately.
 - **2026-05-16** — Database: Self-hosted PostgreSQL on user's VPS. DB_URL provided via .env. Drizzle handles migrations.
-- **2026-05-16** — Fonts: Fraunces (display) + Plus Jakarta Sans (body) — departs from Starlyn's Cormorant + DM Sans for a warmer, more contemporary editorial feel suited to the mountain lodge aesthetic.
+- **2026-05-16** — Fonts revised: Cormorant (display) + Jost (body) + DM Mono (labels). Replaced Fraunces (too quirky/wonky) and Plus Jakarta Sans (too startup-adjacent). Cormorant is old-style serif with artisanal, old-world warmth — italics available, weights 300–600. Jost is geometric humanist, clean and premium.
+- **2026-05-16** — Font replaced again: Gloock → Cormorant. Gloock is single-weight with no italic support. Cormorant offers weights 300–600, normal + italic, same old-world warmth with far more flexibility.
+- **2026-05-16** — Heading font-weight: 400 default; can use 300 or 500 with Cormorant (multi-weight).
 - **2026-05-16** — Nav: Max 4 items enforced — Home / Rooms / Activities / Reserve. WhatsApp link in header.
+- **2026-05-17** — next.config.ts: Added `dangerouslyAllowSVG` for placeholder room images. Remove this when real JPGs are added.
+- **2026-05-17** — RoomCardGrid placed between StatStrip and CTASection. Section rhythm: dark → ivory (rooms) → terracotta. Moved CTASection to follow rooms for natural "see rooms → reserve" flow.
 
 ---
 
 ## Files Created
 
-_(none yet — starting Sprint 1.1)_
+- `src/components/layout/Footer.tsx` — footer: brand/tagline, contact columns, WhatsApp CTA, quick links, reserve CTA, socials, NTB reg field, policies, copyright
+- `src/components/ui/FlipLink.tsx` — flip-ticker nav link (adapted from Starlyn, hotel token defaults)
+- `src/components/layout/Navbar.tsx` — fixed navbar: transparent→canvas on scroll, FlipLinks, WhatsApp icon, Reserve CTA, full-screen mobile menu
+- `src/app/globals.css` — full mountain hotel design tokens (Tailwind v4 @theme)
+- `src/app/layout.tsx` — Fraunces + Plus Jakarta Sans + DM Mono, providers wired
+- `src/app/api/auth/[...all]/route.ts` — BetterAuth catch-all handler
+- `src/components/animations/SmoothScroll.tsx` — copied from Starlyn
+- `src/components/animations/MotionProvider.tsx` — copied from Starlyn
+- `src/components/animations/Preloader.tsx` — copied from Starlyn (uses --dark compat alias)
+- `src/components/animations/PageTransitionCurtain.tsx` — copied from Starlyn
+- `src/components/animations/PageWrapper.tsx` — copied from Starlyn
+- `src/lib/gsap.ts` — GSAP + ScrollTrigger setup
+- `src/lib/lenis.ts` — Lenis smooth scroll init/destroy
+- `src/lib/preloader.ts` — preloader state utility
+- `src/lib/textReveal.ts` — text animation utilities
+- `src/lib/auth.ts` — BetterAuth server config (Drizzle adapter)
+- `src/lib/auth-client.ts` — BetterAuth client hooks
+- `src/db/schema.ts` — full Drizzle schema (rooms, bookings, blocked_dates, seasonal_pricing, gallery, content, seo)
+- `src/db/index.ts` — Drizzle DB instance (pg pool)
+- `drizzle.config.ts` — Drizzle Kit config
+- `.env.example` — all required env vars documented
+- `src/components/sections/HeroFullscreen.tsx` — full-bleed hero: landscape image with parallax, Cormorant headline with line-mask reveal, subtitle, Reserve CTA, scroll indicator
+- `src/components/sections/IntroStatement.tsx` — ivory centered text block: Cormorant heading, terracotta italic accent, body paragraph, scroll-triggered reveal
+- `src/components/sections/StatStrip.tsx` — dark forest bg: 4 stats (elevation, rooms, years, routes), vertical dividers, scroll-triggered fade-in
+- `src/components/sections/CTASection.tsx` — terracotta bg: centered heading, subtitle, ivory Reserve CTA button, scroll-triggered reveal
+- `src/components/ui/RoomCard.tsx` — room card: image with hover zoom, name, tagline, amenity tags, price/night, guest count, Reserve CTA link
+- `src/components/sections/RoomCardGrid.tsx` — 2-col grid of 4 rooms with section header, stagger animation, "View All Rooms" link
+- `public/images/rooms/placeholder-1.svg` through `placeholder-4.svg` — placeholder room images
+- `src/components/sections/FeatureSplit.tsx` — dining feature: image + text split, scroll reveal, link to /dining
+- `src/components/sections/ActivityGrid.tsx` — 6 activities in 3-col grid, dark forest bg, emoji icons, stagger animation
+- `public/images/dining-placeholder.svg` — placeholder dining image
+- `src/components/sections/TestimonialCarousel.tsx` — auto-rotating guest testimonials, dot nav, ivory bg, GSAP scroll reveal
+- `src/components/sections/GalleryMasonry.tsx` — 6-image masonry grid, dark forest bg, hover scale, stagger reveal
+- `public/images/gallery/placeholder-1.svg` through `placeholder-6.svg` — gallery placeholder images
 
 ---
 
@@ -262,5 +299,7 @@ _(none yet)_
 
 ## Next Session
 
-**Start at:** Phase 1, Sprint 1.1 — Repo init + design tokens
-**Context:** Project directory exists at `/Users/tasfiqsunny/Documents/code/WebDev/2026/web-dev-agency/web-agency-nepali-hotel`. Nothing scaffolded yet. Sprint 1.1 creates the Next.js app, installs dependencies, writes globals.css with mountain hotel tokens, and configures tailwind.config.ts. Sprint 1.2 (can run in parallel if separate session) copies Starlyn's animation lib and wires SiteShell + layout.tsx. Sprint 1.3 sets up Drizzle + BetterAuth + the DB schema.
+**Start at:** Phase 5, Sprint 5.1 — Rooms listing page
+**Context:** Homepage complete. Full section flow: Hero → IntroStatement → StatStrip → RoomCardGrid → FeatureSplit (dining) → ActivityGrid → TestimonialCarousel → GalleryMasonry → CTASection → Footer. Section rhythm: dark → ivory → dark → ivory (rooms) → ivory (dining) → dark (activities) → ivory (testimonials) → dark (gallery) → terracotta → dark footer. All homepage sections use consistent GSAP scroll-trigger patterns.
+
+Sprint 5.1 builds the /rooms listing page with room cards and filtering by guest count.
