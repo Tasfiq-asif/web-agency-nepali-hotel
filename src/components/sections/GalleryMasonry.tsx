@@ -9,7 +9,7 @@ const GALLERY_ITEMS = [
   { src: 'https://images.unsplash.com/photo-1590490360182-c33d57733427?w=800&q=80', alt: 'Suite interior with Himalayan views', area: 'c' },
   { src: 'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=800&q=80', alt: 'Mountain herb garden', area: 'd' },
   { src: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800&q=80', alt: 'Sunrise trek above the clouds', area: 'e' },
-  { src: 'https://images.unsplash.com/photo-1475483768296-6163e8f4a9c5?w=800&q=80', alt: 'Evening gathering with mountain backdrop', area: 'f' },
+  { src: 'https://images.unsplash.com/photo-1510798831971-661eb04b3739?w=800&q=80', alt: 'Evening gathering with mountain backdrop', area: 'f' },
 ];
 
 export function GalleryMasonry() {
