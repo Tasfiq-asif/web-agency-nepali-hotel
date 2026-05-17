@@ -1,6 +1,6 @@
 # Mountain Nest Hotel — Build Context
 
-Generated: 2026-05-16 | Last updated: 2026-05-17 (Sprint 4.3 complete)
+Generated: 2026-05-16 | Last updated: 2026-05-17 (Sprint 6.1 — AvailabilityCalendar complete)
 
 ---
 
@@ -213,11 +213,11 @@ sessions          — managed by BetterAuth
   - Sprint 4.1: RoomCardGrid + RoomCard ✅
   - Sprint 4.2: FeatureSplit (dining) + ActivityGrid ✅
   - Sprint 4.3: TestimonialCarousel + GalleryMasonry ✅
-### Phase 5: Rooms Pages ⏳
-  - Sprint 5.1: Rooms listing page ⏳
-  - Sprint 5.2: Room detail page ⏳
+### Phase 5: Rooms Pages ✅
+  - Sprint 5.1: Rooms listing page ✅
+  - Sprint 5.2: Room detail page ✅
 ### Phase 6: Booking System ⏳
-  - Sprint 6.1: AvailabilityCalendar component ⏳
+  - Sprint 6.1: AvailabilityCalendar component ✅
   - Sprint 6.2: BookingForm multi-step ⏳
   - Sprint 6.3: Booking API routes + email triggers ⏳
 ### Phase 7: Admin Dashboard ⏳
@@ -248,7 +248,11 @@ sessions          — managed by BetterAuth
 - **2026-05-16** — Heading font-weight: 400 default; can use 300 or 500 with Cormorant (multi-weight).
 - **2026-05-16** — Nav: Max 4 items enforced — Home / Rooms / Activities / Reserve. WhatsApp link in header.
 - **2026-05-17** — next.config.ts: Added `dangerouslyAllowSVG` for placeholder room images. Remove this when real JPGs are added.
+- **2026-05-17** — Room detail page split into server component (page.tsx) + client component (RoomDetailClient.tsx). Server side handles generateStaticParams, generateMetadata, and notFound(). Client side handles GSAP. This pattern should be used for all future detail pages.
 - **2026-05-17** — RoomCardGrid placed between StatStrip and CTASection. Section rhythm: dark → ivory (rooms) → terracotta. Moved CTASection to follow rooms for natural "see rooms → reserve" flow.
+- **2026-05-17** — AvailabilityCalendar built from scratch (not using react-day-picker). Full control over Cormorant italic month header, DM Mono day numbers, square cell geometry, half-gradient range bars at endpoints. API route at /api/availability returns blocked_dates + confirmed booking dates for a given roomSlug + date window. DB-not-connected error is caught and returns empty array so calendar renders in dev without a live DB.
+- **2026-05-17** — /book page created as a test harness for the calendar. Will become the full multi-step booking flow in Sprint 6.2.
+- **2026-05-17** — Awwwards quality pass: 9 targeted fixes applied. Hero headline `clamp(5rem, 13vw, 14rem)`. IntroStatement overlaps hero -100px with border-radius 24px. StatStrip is now full-bleed (no container cap). Gradient bridges on all section transitions via backgroundImage (no z-index conflicts). ActivityGrid emojis replaced with Cormorant italic numerals 01–06. GalleryMasonry grid bleeds past container. RoomCard hover orchestrates 3 properties via CSS (card, h3, price-row). CTA buttons use btn-wipe fill-wipe CSS class — JS color handlers removed. ScrollVelocityEffect applies skewY to .container divs (not section backgrounds) during fast scroll.
 
 ---
 
@@ -288,6 +292,14 @@ sessions          — managed by BetterAuth
 - `src/components/sections/TestimonialCarousel.tsx` — auto-rotating guest testimonials, dot nav, ivory bg, GSAP scroll reveal
 - `src/components/sections/GalleryMasonry.tsx` — 6-image masonry grid, dark forest bg, hover scale, stagger reveal
 - `public/images/gallery/placeholder-1.svg` through `placeholder-6.svg` — gallery placeholder images
+- `src/data/rooms.ts` — updated Room interface + ROOMS data with `description` field and expanded amenities (6 per room)
+- `src/app/rooms/page.tsx` — rooms listing page: dark forest header, guest-count filter bar, full 6-room grid, GSAP reveals
+- `src/app/rooms/[slug]/page.tsx` — server component: generateStaticParams, generateMetadata, notFound() for invalid slugs
+- `src/app/rooms/[slug]/RoomDetailClient.tsx` — client component: 80vh hero image with gradient + text overlay, meta row (price + guests), description, amenity chips, dark forest sticky booking widget, Reserve CTA → /book?room=[slug]
+- `src/components/animations/ScrollVelocityEffect.tsx` — RAF-based scroll velocity skew, targets main .container divs, max ±1.2°, lerp 0.07
+- `src/app/api/availability/route.ts` — GET endpoint: blocked_dates + confirmed booking dates for roomSlug + date range
+- `src/components/ui/AvailabilityCalendar.tsx` — custom date range picker: DM Mono numbers, Cormorant italic header, half-gradient range bars, today dot, clear dates, nights summary
+- `src/app/book/page.tsx` — placeholder /book page for calendar testing (will become full booking flow in Sprint 6.2)
 
 ---
 
@@ -299,7 +311,12 @@ _(none yet)_
 
 ## Next Session
 
-**Start at:** Phase 5, Sprint 5.1 — Rooms listing page
-**Context:** Homepage complete. Full section flow: Hero → IntroStatement → StatStrip → RoomCardGrid → FeatureSplit (dining) → ActivityGrid → TestimonialCarousel → GalleryMasonry → CTASection → Footer. Section rhythm: dark → ivory → dark → ivory (rooms) → ivory (dining) → dark (activities) → ivory (testimonials) → dark (gallery) → terracotta → dark footer. All homepage sections use consistent GSAP scroll-trigger patterns.
+**Start at:** Phase 6, Sprint 6.2 — BookingForm multi-step
+**Context:** Sprint 6.1 complete. AvailabilityCalendar is built and tested: renders correctly, range selection with terracotta highlights works, API endpoint returns blocked + booked dates. /book page exists as a skeleton shell.
 
-Sprint 5.1 builds the /rooms listing page with room cards and filtering by guest count.
+Sprint 6.2 builds the full multi-step BookingForm:
+- Step 1: Dates → embeds AvailabilityCalendar, "Continue" only enabled when both check-in + check-out are set
+- Step 2: Room selection → show available rooms for the selected dates (check against blocked dates/bookings), with RoomCard-style cards, pre-selects if ?room= param is in URL
+- Step 3: Guest details → name, email, phone, nationality, adults/children, special requests
+- Step 4: Confirm → summary of all selections, "Submit Enquiry" button → POST to /api/bookings
+The form should live in src/components/sections/BookingForm.tsx (client component) and the /book page should render it.
