@@ -13,8 +13,20 @@ export function RoomCardGrid() {
 
     const ctx = gsap.context(() => {
       gsap.fromTo(
+        '.rooms-label',
+        { opacity: 0, y: 20 },
+        { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out', scrollTrigger: { trigger: sectionRef.current, start: 'top 80%' } }
+      );
+
+      gsap.fromTo(
+        '.rooms-heading',
+        { yPercent: 110 },
+        { yPercent: 0, duration: 1.0, ease: 'power4.out', stagger: 0.1, scrollTrigger: { trigger: sectionRef.current, start: 'top 75%' } }
+      );
+
+      gsap.fromTo(
         '.room-card',
-        { opacity: 0, y: 50 },
+        { opacity: 0, y: 40 },
         {
           opacity: 1,
           y: 0,
@@ -34,7 +46,7 @@ export function RoomCardGrid() {
       <div className="container">
         {/* Section header */}
         <div style={{ textAlign: 'center', marginBottom: 'clamp(3rem, 5vw, 5rem)' }}>
-          <p className="label mb-4" style={{ color: 'var(--color-accent)' }}>
+          <p className="rooms-label label mb-4" style={{ color: 'var(--color-accent)' }}>
             Rooms & Suites
           </p>
           <h2
@@ -46,8 +58,14 @@ export function RoomCardGrid() {
               marginInline: 'auto',
             }}
           >
-            A room for every{' '}
-            <span style={{ fontStyle: 'italic', fontWeight: 400 }}>kind of stay</span>
+            <span className="block overflow-hidden">
+              <span className="rooms-heading block">A room for every</span>
+            </span>
+            <span className="block overflow-hidden">
+              <span className="rooms-heading block" style={{ fontStyle: 'italic', fontWeight: 400 }}>
+                kind of stay
+              </span>
+            </span>
           </h2>
         </div>
 

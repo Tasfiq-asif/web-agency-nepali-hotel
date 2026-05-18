@@ -12,13 +12,28 @@ export function FeatureSplit() {
     const ctx = gsap.context(() => {
       gsap.fromTo(
         '.feature-image',
-        { opacity: 0, scale: 1.05 },
+        { opacity: 0 },
         {
           opacity: 1,
-          scale: 1,
           duration: 1.2,
           ease: 'power3.out',
           scrollTrigger: { trigger: sectionRef.current, start: 'top 70%' },
+        }
+      );
+
+      // Parallax — image lags behind scroll for sense of depth
+      gsap.fromTo(
+        '.feature-image img',
+        { yPercent: 5 },
+        {
+          yPercent: -5,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: 'top bottom',
+            end: 'bottom top',
+            scrub: 1.5,
+          },
         }
       );
 
@@ -49,9 +64,10 @@ export function FeatureSplit() {
             style={{ aspectRatio: '4 / 5' }}
           >
             <img
-              src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=800&q=80"
+              src="/images/dining.webp"
               alt="Mountain Nest Hotel dining experience"
-              className="w-full h-full object-cover"
+              className="w-full object-cover"
+              style={{ height: '120%', willChange: 'transform' }}
             />
           </div>
 

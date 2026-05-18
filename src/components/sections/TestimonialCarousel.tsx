@@ -36,6 +36,7 @@ const TESTIMONIALS = [
 
 export function TestimonialCarousel() {
   const sectionRef = useRef<HTMLElement>(null);
+  const quoteRef = useRef<HTMLQuoteElement>(null);
   const [active, setActive] = useState(0);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -68,6 +69,17 @@ export function TestimonialCarousel() {
     return () => ctx.revert();
   }, []);
 
+  // Animate quote in whenever active changes
+  useEffect(() => {
+    if (!quoteRef.current) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    gsap.fromTo(
+      quoteRef.current,
+      { opacity: 0, y: 18 },
+      { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out' }
+    );
+  }, [active]);
+
   const goTo = (index: number) => {
     setActive(index);
     if (intervalRef.current) clearInterval(intervalRef.current);
@@ -89,6 +101,7 @@ export function TestimonialCarousel() {
 
           {/* Quote */}
           <blockquote
+            ref={quoteRef}
             key={active}
             style={{
               fontFamily: 'var(--font-display)',
@@ -99,7 +112,6 @@ export function TestimonialCarousel() {
               lineHeight: 1.4,
               marginBottom: 'clamp(2rem, 4vw, 3rem)',
               minHeight: '8rem',
-              transition: 'opacity 0.5s ease',
             }}
           >
             &ldquo;{current.quote}&rdquo;
@@ -130,23 +142,34 @@ export function TestimonialCarousel() {
             </p>
           </div>
 
-          {/* Dots */}
-          <div style={{ display: 'flex', justifyContent: 'center', gap: '0.75rem' }}>
+          {/* Dots — padded buttons for 44px touch targets */}
+          <div style={{ display: 'flex', justifyContent: 'center', gap: '0.25rem' }}>
             {TESTIMONIALS.map((_, i) => (
               <button
                 key={i}
                 onClick={() => goTo(i)}
                 aria-label={`View testimonial ${i + 1}`}
                 style={{
-                  width: i === active ? 24 : 8,
-                  height: 8,
-                  borderRadius: 4,
+                  padding: '18px 10px',
+                  background: 'none',
                   border: 'none',
-                  background: i === active ? 'var(--color-accent)' : 'rgba(245,240,232,0.25)',
                   cursor: 'pointer',
-                  transition: 'all 0.4s cubic-bezier(0.22, 1, 0.36, 1)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
                 }}
-              />
+              >
+                <span
+                  style={{
+                    display: 'block',
+                    width: i === active ? 24 : 8,
+                    height: 8,
+                    borderRadius: 4,
+                    background: i === active ? 'var(--color-accent)' : 'rgba(245,240,232,0.25)',
+                    transition: 'all 0.4s cubic-bezier(0.22, 1, 0.36, 1)',
+                  }}
+                />
+              </button>
             ))}
           </div>
         </div>
