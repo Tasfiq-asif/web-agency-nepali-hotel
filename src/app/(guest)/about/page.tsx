@@ -119,7 +119,7 @@ export default function AboutPage() {
   }, []);
 
   return (
-    <main>
+    <main id="main-content">
       {/* 1. Page Header — dark forest */}
       <section
         className="bg-ink"

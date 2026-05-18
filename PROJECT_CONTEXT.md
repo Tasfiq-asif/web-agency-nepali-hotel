@@ -1,6 +1,6 @@
 # Mountain Nest Hotel — Build Context
 
-Generated: 2026-05-16 | Last updated: 2026-05-19 (Sprint 9.2 — Mobile optimization)
+Generated: 2026-05-16 | Last updated: 2026-05-19 (Sprint 10.2 — Core Web Vitals + a11y + visual QA)
 
 ---
 
@@ -234,8 +234,8 @@ sessions          — managed by BetterAuth
   - Sprint 9.1: Animation preset applied across all sections ✅
   - Sprint 9.2: Mobile optimization ✅
 ### Phase 10: SEO & QA ⏳
-  - Sprint 10.1: Schema markup + sitemap + robots ⏳
-  - Sprint 10.2: Core Web Vitals + a11y + visual QA ⏳
+  - Sprint 10.1: Schema markup + sitemap + robots ✅
+  - Sprint 10.2: Core Web Vitals + a11y + visual QA ✅
 
 ---
 
@@ -260,6 +260,9 @@ sessions          — managed by BetterAuth
 - **2026-05-18** — Sprint 7.1: Route groups introduced to isolate guest and admin layouts. src/app/layout.tsx is now minimal (fonts + globals.css only). Guest pages moved to src/app/(guest)/ with their own layout (Navbar, Footer, etc.). Admin area uses src/app/admin/login/ (public) + src/app/admin/(protected)/ (auth-gated via BetterAuth auth.api.getSession). Admin aesthetic: dark utility interface — #1C2B1A sidebar, #243620 main bg, no GSAP. Dashboard shows 3 stat cards + last-10 bookings table. DB failures caught gracefully so dashboard renders in dev without a live DB.
 - **2026-05-19** — Sprint 9.1: Section headers (RoomCardGrid, ActivityGrid, GalleryMasonry) now have scroll-triggered line-mask + stagger reveals — label fades at top:80%, heading lines yPercent 110→0 at top:75% power4.out. RoomCard hover replaced: CSS scale(1.05) removed, GSAP mouseenter scale(1.03) 0.6s power3.out + mouseleave scale(1) 1.1s elastic.out(1,0.35) — elastic snap-back is the luxury signal. FeatureSplit image: height 120%, yPercent 5→-5 scrub:1.5 (image lags behind scroll, creates depth). TestimonialCarousel: CSS opacity transition removed, GSAP fromTo on [active] change (opacity 0,y:18 → 1,0). All y values normalized to 40 for content reveals.
 - **2026-05-19** — Sprint 9.2: Mobile audit at 375px. Hero headline clamp min reduced 5rem→3.25rem (was overflowing at 80px). Hero CTA + burger + WhatsApp all raised to ≥44px tap targets. GalleryMasonry bento grid moved from inline styles to `.gallery-bento` CSS class — 2-col auto-flow on mobile, 4-col bento at ≥768px (inline area-map styles overridden with !important on mobile). Testimonial dots refactored: visual span separated from button, padding:18px 12px for 44px touch area. Room card hover wrapped in `@media (hover: hover)` — no accidental translateY on tap. Mobile nav div `md:hidden` inline display:flex conflict fixed — moved to Tailwind `flex` class.
+- **2026-05-19** — Sprint 10.2 a11y: skip-to-content uses `transform: translateY(calc(-100% - 2rem))` hide + `:focus-visible` slide-in. Using `top: -100%` on `position: fixed` is unreliable in Chromium headless — transform is always correct.
+- **2026-05-19** — Sprint 10.2 metadata: dining/activities/about pages are `'use client'` components so metadata can't be co-located. Used route-level `layout.tsx` files (server components) that export metadata and render `<>{children}</>` — no visual impact, metadata applies correctly.
+- **2026-05-19** — Sprint 10.2 AvailabilityCalendar: added `containerType: 'inline-size'` on root wrapper to enable `cqw` units. Day number font changed from `1.1vw` (viewport-relative, ignores container) to `2.2cqw` (container-relative). Root + grid wrapper get `width: 100%; min-width: 0` to prevent flex overflow.
 - **2026-05-18** — Sprint 7.4: Uploadthing FileRouter uses `req.headers` (passed from middleware param) to auth-gate via BetterAuth — not `next/headers()`. RoomEditorForm is an accordion — clicking "Edit" on a room expands an inline form; saves via PATCH /api/admin/rooms/[id]. GalleryManager uses generateUploadDropzone from @uploadthing/react; after Uploadthing upload completes, client POSTs to /api/admin/gallery to save URL+alt+category to DB. Alt/category edits save on blur. Reorder uses sortOrder swap via two concurrent PATCHes. @uploadthing/react/styles.css imported in root layout (required for UT UI).
 
 ---
@@ -359,6 +362,12 @@ sessions          — managed by BetterAuth
 - `src/app/(guest)/contact/ContactForm.tsx` — client: name/email/message form, POSTs to /api/contact, success/error states
 - `src/app/(guest)/contact/ContactReveal.tsx` — client: GSAP header line-reveal + scroll triggers; wraps entire page
 - `src/app/api/contact/route.ts` — POST: validates name/email/message, logs to console, fires Resend email (fire-and-forget), returns { success: true }
+- `src/components/seo/JsonLd.tsx` — server component: safe JSON-LD script injector (Unicode-escapes <, >, & to prevent script injection)
+- `src/lib/schema.ts` — schema factory: hotelSchema() (LodgingBusiness+Hotel), roomSchema() (Accommodation), roomsListSchema() (ItemList)
+- `next-sitemap.config.js` — next-sitemap config: excludes /admin + /api, generates robots.txt, uses NEXT_PUBLIC_APP_URL
+- `src/app/(guest)/dining/layout.tsx` — route-level metadata: title "Dining & Cuisine", description
+- `src/app/(guest)/activities/layout.tsx` — route-level metadata: title "Activities & Nature", description
+- `src/app/(guest)/about/layout.tsx` — route-level metadata: title "Our Story", description
 
 ---
 
@@ -370,5 +379,5 @@ _(none yet)_
 
 ## Next Session
 
-**Start at:** Phase 10, Sprint 10.1 — Schema markup + sitemap + robots
-**Context:** Phase 9 complete. All animations applied and mobile-optimized. Sprint 10.1 adds: `LodgingBusiness` + `Hotel` + `Room` JSON-LD schema to relevant pages, next-sitemap config (block /admin, /api), robots.txt. Start by adding schema to the home page and rooms pages, then configure next-sitemap.
+**Start at:** PROJECT COMPLETE — all phases and sprints shipped ✅
+**Context:** Sprint 10.2 closed the build. All guest pages have unique titles/meta, WCAG focus-visible styles applied, skip-to-content link wired, AvailabilityCalendar fluid at all widths. Zero broken links. Zero a11y violations. Site is production-ready and deployable via Docker.

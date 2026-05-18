@@ -1,8 +1,15 @@
+import type { Metadata } from 'next';
 import { db } from '@/db';
 import { galleryImages } from '@/db/schema';
 import { asc } from 'drizzle-orm';
 import { GalleryClient } from './GalleryClient';
 import { CTASection } from '@/components/sections/CTASection';
+
+export const metadata: Metadata = {
+  title: 'Gallery',
+  description:
+    'Explore Mountain Nest Hotel through photography — panoramic Himalayan views, our rooms and suites, dining moments, and the landscapes of Nepal\'s Solukhumbu District.',
+};
 
 type GalleryImage = {
   id: number
@@ -48,7 +55,7 @@ export default async function GalleryPage() {
   const images = await fetchImages();
 
   return (
-    <main>
+    <main id="main-content">
       {/* Page header — dark forest */}
       <section
         className="bg-dark"

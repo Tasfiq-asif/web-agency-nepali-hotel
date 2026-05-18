@@ -52,7 +52,7 @@ export function RoomsClient() {
   }, [activeFilter]);
 
   return (
-    <main>
+    <main id="main-content">
       {/* Page header */}
       <section
         className="bg-forest"

@@ -1,5 +1,12 @@
+import type { Metadata } from 'next';
 import { ContactReveal } from './ContactReveal';
 import { ContactForm } from './ContactForm';
+
+export const metadata: Metadata = {
+  title: 'Contact Us',
+  description:
+    'Get in touch with Mountain Nest Hotel in Nepal\'s Solukhumbu District. Chat on WhatsApp, send an email, or fill in our inquiry form — we respond within 4 hours.',
+};
 
 const CONTACT_INFO = [
   { label: 'Location',       value: 'Langtang Valley, Rasuwa District, Bagmati Province, Nepal' },
@@ -31,7 +38,7 @@ const ROUTES = [
 
 export default function ContactPage() {
   return (
-    <main>
+    <main id="main-content">
       <ContactReveal>
         {/* Page header — ivory */}
         <section

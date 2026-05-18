@@ -238,7 +238,7 @@ export function AvailabilityCalendar({
   return (
     <div
       className={className}
-      style={{ userSelect: 'none', WebkitUserSelect: 'none' }}
+      style={{ userSelect: 'none', WebkitUserSelect: 'none', width: '100%', minWidth: 0, containerType: 'inline-size' }}
       aria-label="Availability calendar"
     >
 
@@ -343,6 +343,8 @@ export function AvailabilityCalendar({
         style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(7, 1fr)',
+          width: '100%',
+          minWidth: 0,
         }}
       >
         {cells.map((day, idx) => {
@@ -390,7 +392,9 @@ export function AvailabilityCalendar({
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
+                width: '100%',
                 aspectRatio: '1',
+                minWidth: 0,
               }}
             >
               {/* Day circle / indicator */}
@@ -419,7 +423,7 @@ export function AvailabilityCalendar({
                 <span
                   style={{
                     fontFamily: 'var(--font-mono)',
-                    fontSize: 'clamp(0.7rem, 1.1vw, 0.875rem)',
+                    fontSize: 'clamp(0.625rem, 2.2cqw, 0.875rem)',
                     lineHeight: 1,
                     color: isEndpoint
                       ? CANVAS

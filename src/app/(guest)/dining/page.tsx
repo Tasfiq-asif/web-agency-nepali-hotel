@@ -126,7 +126,7 @@ export default function DiningPage() {
   }, []);
 
   return (
-    <main>
+    <main id="main-content">
       {/* Page header — dark forest */}
       <section
         className="bg-forest"

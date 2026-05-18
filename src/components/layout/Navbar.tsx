@@ -77,7 +77,7 @@ export function Navbar() {
             </a>
 
             {/* Desktop nav */}
-            <nav className="hidden md:flex" style={{ alignItems: 'center', gap: 36 }}>
+            <nav aria-label="Main navigation" className="hidden md:flex" style={{ alignItems: 'center', gap: 36 }}>
               {NAV_LINKS.map(({ label, href }) => (
                 <FlipLink
                   key={label}
@@ -264,6 +264,7 @@ function MobileMenu({
 
           {/* Nav links */}
           <nav
+            aria-label="Mobile navigation"
             style={{ flex: 1, display: 'flex', flexDirection: 'column', paddingLeft: 20 }}
             onMouseLeave={() => setHoveredIdx(null)}
           >
@@ -364,6 +365,7 @@ function MobileMenu({
               href={whatsappHref}
               target="_blank"
               rel="noopener noreferrer"
+              aria-label={`Call or message on WhatsApp: ${whatsappNumber}`}
               style={{
                 display:       'inline-flex',
                 alignItems:    'center',
