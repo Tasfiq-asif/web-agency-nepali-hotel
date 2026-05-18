@@ -53,7 +53,7 @@ export function RoomDetailClient({ room }: Props) {
   }, []);
 
   return (
-    <main>
+    <main id="main-content">
       {/* ── Hero ── */}
       <div
         className="relative"

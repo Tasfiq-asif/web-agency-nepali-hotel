@@ -12,7 +12,7 @@ export const metadata = {
 export default async function BookPage({ searchParams }: Props) {
   const params = await searchParams;
   return (
-    <main>
+    <main id="main-content">
       <BookingForm initialRoom={params.room} />
     </main>
   );

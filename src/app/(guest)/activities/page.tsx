@@ -140,7 +140,7 @@ export default function ActivitiesPage() {
   }, []);
 
   return (
-    <main>
+    <main id="main-content">
       {/* Page header — dark forest */}
       <section
         className="bg-forest"

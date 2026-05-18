@@ -233,6 +233,42 @@ body::after {
   }
 }
 
+/* ─── Focus visible — keyboard nav (WCAG 2.4.7) ─── */
+
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* Suppress focus ring on mouse click for elements that override it */
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Skip to content link — hidden until keyboard focused */
+.skip-to-content {
+  position: fixed;
+  top: 1rem;
+  left: 1rem;
+  z-index: 9999;
+  padding: 0.75rem 1.5rem;
+  background: var(--color-accent);
+  color: var(--color-canvas);
+  font-family: var(--font-body);
+  font-size: var(--text-body-sm);
+  letter-spacing: 0.05em;
+  text-decoration: none;
+  transform: translateY(calc(-100% - 2rem));
+  transition: transform 0.15s ease;
+}
+
+.skip-to-content:focus-visible {
+  transform: translateY(0);
+  outline: 2px solid var(--color-canvas);
+  outline-offset: 2px;
+}
+
 /* ─── Gallery bento — responsive ─── */
 
 .gallery-bento {

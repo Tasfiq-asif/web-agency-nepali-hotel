@@ -14,7 +14,7 @@ export default function Home() {
   return (
     <>
       <JsonLd data={hotelSchema()} />
-      <main>
+      <main id="main-content">
       <HeroFullscreen />
       <IntroStatement />
       <StatStrip />
