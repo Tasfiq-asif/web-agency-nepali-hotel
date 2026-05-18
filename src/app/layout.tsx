@@ -1,11 +1,7 @@
 import type { Metadata } from 'next';
 import { Cormorant, Jost, DM_Mono } from 'next/font/google';
 import './globals.css';
-import { SmoothScroll } from '@/components/animations/SmoothScroll';
-import { MotionProvider } from '@/components/animations/MotionProvider';
-import { Preloader } from '@/components/animations/Preloader';
-import { Navbar } from '@/components/layout/Navbar';
-import { Footer } from '@/components/layout/Footer';
+import '@uploadthing/react/styles.css';
 
 const cormorant = Cormorant({
   variable: '--font-cormorant',
@@ -43,26 +39,10 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html
-      lang="en"
-      className={`${cormorant.variable} ${jost.variable} ${dmMono.variable}`}
-    >
-      <body>
-        <Preloader />
-        <Navbar />
-        <SmoothScroll>
-          <MotionProvider>
-            {children}
-            <Footer />
-          </MotionProvider>
-        </SmoothScroll>
-      </body>
+    <html lang="en" className={`${cormorant.variable} ${jost.variable} ${dmMono.variable}`}>
+      <body>{children}</body>
     </html>
   );
 }

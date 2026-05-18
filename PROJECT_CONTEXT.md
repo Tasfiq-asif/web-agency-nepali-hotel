@@ -1,6 +1,6 @@
 # Mountain Nest Hotel — Build Context
 
-Generated: 2026-05-16 | Last updated: 2026-05-17 (Sprint 6.1 — AvailabilityCalendar complete)
+Generated: 2026-05-16 | Last updated: 2026-05-19 (Sprint 9.2 — Mobile optimization)
 
 ---
 
@@ -218,20 +218,21 @@ sessions          — managed by BetterAuth
   - Sprint 5.2: Room detail page ✅
 ### Phase 6: Booking System ⏳
   - Sprint 6.1: AvailabilityCalendar component ✅
-  - Sprint 6.2: BookingForm multi-step ⏳
-  - Sprint 6.3: Booking API routes + email triggers ⏳
+  - Sprint 6.2: BookingForm multi-step ✅
+  - Sprint 6.2b: Desktop booking layout redesign (split panel) ✅
+  - Sprint 6.3: Booking API routes + email triggers ✅
 ### Phase 7: Admin Dashboard ⏳
-  - Sprint 7.1: AdminShell + auth gate + dashboard home ⏳
-  - Sprint 7.2: AdminBookingTable + booking actions ⏳
-  - Sprint 7.3: AdminCalendarManager ⏳
-  - Sprint 7.4: AdminRoomEditor + AdminGalleryUploader ⏳
-  - Sprint 7.5: AdminContentEditor + AdminSEOFields ⏳
+  - Sprint 7.1: AdminShell + auth gate + dashboard home ✅
+  - Sprint 7.2: AdminBookingTable + booking actions ✅
+  - Sprint 7.3: AdminCalendarManager ✅
+  - Sprint 7.4: AdminRoomEditor + AdminGalleryUploader ✅
+  - Sprint 7.5: AdminContentEditor + AdminSEOFields ✅
 ### Phase 8: Remaining Pages ⏳
-  - Sprint 8.1: Dining + Activities pages ⏳
-  - Sprint 8.2: Gallery + About + Contact pages ⏳
+  - Sprint 8.1: Dining + Activities pages ✅
+  - Sprint 8.2: Gallery + About + Contact pages ✅
 ### Phase 9: Animations & Mobile ⏳
-  - Sprint 9.1: Animation preset applied across all sections ⏳
-  - Sprint 9.2: Mobile optimization ⏳
+  - Sprint 9.1: Animation preset applied across all sections ✅
+  - Sprint 9.2: Mobile optimization ✅
 ### Phase 10: SEO & QA ⏳
   - Sprint 10.1: Schema markup + sitemap + robots ⏳
   - Sprint 10.2: Core Web Vitals + a11y + visual QA ⏳
@@ -252,7 +253,14 @@ sessions          — managed by BetterAuth
 - **2026-05-17** — RoomCardGrid placed between StatStrip and CTASection. Section rhythm: dark → ivory (rooms) → terracotta. Moved CTASection to follow rooms for natural "see rooms → reserve" flow.
 - **2026-05-17** — AvailabilityCalendar built from scratch (not using react-day-picker). Full control over Cormorant italic month header, DM Mono day numbers, square cell geometry, half-gradient range bars at endpoints. API route at /api/availability returns blocked_dates + confirmed booking dates for a given roomSlug + date window. DB-not-connected error is caught and returns empty array so calendar renders in dev without a live DB.
 - **2026-05-17** — /book page created as a test harness for the calendar. Will become the full multi-step booking flow in Sprint 6.2.
+- **2026-05-17** — BookingForm built as a single client component with `useMobile()` hook (breakpoint 768px). Desktop: 4-step track stepper + horizontal room cards (120px image) + side-by-side nav. Mobile: segmented progress bar + "02 · ROOM / 2 of 4" label + vertical portrait room cards (3:2 ratio) with availability badge overlaid on image + full-width Continue CTA + larger 48px touch targets. Room availability fetched in parallel (6 concurrent API calls) on Step 2 mount. /api/bookings POST is gracefully handled (Sprint 6.3 builds the route).
 - **2026-05-17** — Awwwards quality pass: 9 targeted fixes applied. Hero headline `clamp(5rem, 13vw, 14rem)`. IntroStatement overlaps hero -100px with border-radius 24px. StatStrip is now full-bleed (no container cap). Gradient bridges on all section transitions via backgroundImage (no z-index conflicts). ActivityGrid emojis replaced with Cormorant italic numerals 01–06. GalleryMasonry grid bleeds past container. RoomCard hover orchestrates 3 properties via CSS (card, h3, price-row). CTA buttons use btn-wipe fill-wipe CSS class — JS color handlers removed. ScrollVelocityEffect applies skewY to .container divs (not section backgrounds) during fast scroll.
+- **2026-05-18** — Sprint 6.3: Email is fire-and-forget (Promise.allSettled) — a Resend failure never blocks the booking save. If RESEND_API_KEY is unset, sendBookingEmails() returns immediately. Conflict check uses `confirmed` status only, matching the availability calendar policy. Total price calculated from DB basePriceUsd (not client-side ROOMS data) for integrity.
+- **2026-05-18** — Desktop booking layout redesign (Sprint 6.2b): Full-viewport 52/48 split panel at ≥1024px. Left panel: pinned step indicator (hairline-bordered header), scrollable step content, pinned nav footer. Right panel (dark ink bg): 55% image area cycles through 4 gallery webps via CSS opacity crossfade → blurs with "Choose a room →" overlay when on step 2+ with no room → switches to selected room's static image with gradient scrim + name/tagline. Bottom 45%: "Select dates to begin →" hint until dates chosen, then progressive summary rows (check-in, check-out, nights, guests, room) + terracotta estimated total when room+nights are set. useMobile() breakpoint raised from 768→1024 to match split activation. book/page.tsx simplified to bare `<main>` — BookingForm owns all layout internally. Mobile layout (segmented bar, single-column, NavRow inline) unchanged.
+- **2026-05-18** — Sprint 7.1: Route groups introduced to isolate guest and admin layouts. src/app/layout.tsx is now minimal (fonts + globals.css only). Guest pages moved to src/app/(guest)/ with their own layout (Navbar, Footer, etc.). Admin area uses src/app/admin/login/ (public) + src/app/admin/(protected)/ (auth-gated via BetterAuth auth.api.getSession). Admin aesthetic: dark utility interface — #1C2B1A sidebar, #243620 main bg, no GSAP. Dashboard shows 3 stat cards + last-10 bookings table. DB failures caught gracefully so dashboard renders in dev without a live DB.
+- **2026-05-19** — Sprint 9.1: Section headers (RoomCardGrid, ActivityGrid, GalleryMasonry) now have scroll-triggered line-mask + stagger reveals — label fades at top:80%, heading lines yPercent 110→0 at top:75% power4.out. RoomCard hover replaced: CSS scale(1.05) removed, GSAP mouseenter scale(1.03) 0.6s power3.out + mouseleave scale(1) 1.1s elastic.out(1,0.35) — elastic snap-back is the luxury signal. FeatureSplit image: height 120%, yPercent 5→-5 scrub:1.5 (image lags behind scroll, creates depth). TestimonialCarousel: CSS opacity transition removed, GSAP fromTo on [active] change (opacity 0,y:18 → 1,0). All y values normalized to 40 for content reveals.
+- **2026-05-19** — Sprint 9.2: Mobile audit at 375px. Hero headline clamp min reduced 5rem→3.25rem (was overflowing at 80px). Hero CTA + burger + WhatsApp all raised to ≥44px tap targets. GalleryMasonry bento grid moved from inline styles to `.gallery-bento` CSS class — 2-col auto-flow on mobile, 4-col bento at ≥768px (inline area-map styles overridden with !important on mobile). Testimonial dots refactored: visual span separated from button, padding:18px 12px for 44px touch area. Room card hover wrapped in `@media (hover: hover)` — no accidental translateY on tap. Mobile nav div `md:hidden` inline display:flex conflict fixed — moved to Tailwind `flex` class.
+- **2026-05-18** — Sprint 7.4: Uploadthing FileRouter uses `req.headers` (passed from middleware param) to auth-gate via BetterAuth — not `next/headers()`. RoomEditorForm is an accordion — clicking "Edit" on a room expands an inline form; saves via PATCH /api/admin/rooms/[id]. GalleryManager uses generateUploadDropzone from @uploadthing/react; after Uploadthing upload completes, client POSTs to /api/admin/gallery to save URL+alt+category to DB. Alt/category edits save on blur. Reorder uses sortOrder swap via two concurrent PATCHes. @uploadthing/react/styles.css imported in root layout (required for UT UI).
 
 ---
 
@@ -299,7 +307,58 @@ sessions          — managed by BetterAuth
 - `src/components/animations/ScrollVelocityEffect.tsx` — RAF-based scroll velocity skew, targets main .container divs, max ±1.2°, lerp 0.07
 - `src/app/api/availability/route.ts` — GET endpoint: blocked_dates + confirmed booking dates for roomSlug + date range
 - `src/components/ui/AvailabilityCalendar.tsx` — custom date range picker: DM Mono numbers, Cormorant italic header, half-gradient range bars, today dot, clear dates, nights summary
-- `src/app/book/page.tsx` — placeholder /book page for calendar testing (will become full booking flow in Sprint 6.2)
+- `src/app/book/page.tsx` — server component: reads ?room= searchParam, passes to BookingForm
+- `src/components/sections/BookingForm.tsx` — 4-step booking form (Dates → Room → Details → Confirm), responsive desktop/mobile layouts, parallel availability fetch, graceful submit error handling
+- `src/app/book/page.tsx` — simplified to bare `<main>` — BookingForm owns all layout, desktop split panel + mobile single-column internally
+- `src/lib/email-templates.ts` — HTML email templates: guestConfirmationEmail + adminNotificationEmail (inline-styled, hotel aesthetic)
+- `src/lib/email.ts` — Resend client + sendBookingEmails() (Promise.allSettled — email never blocks booking save)
+- `src/app/api/bookings/route.ts` — POST: validate → find room → conflict check → insert → fire emails → return { id }
+- `src/app/api/bookings/[id]/route.ts` — GET: returns booking + room fields for confirmation page
+- `src/app/layout.tsx` — minimal root: HTML, fonts, globals.css only (guest nav/footer moved to (guest) group)
+- `src/app/(guest)/layout.tsx` — guest layout: Preloader, ScrollVelocityEffect, Navbar, SmoothScroll, MotionProvider, Footer
+- `src/app/(guest)/page.tsx` — home (moved from src/app/page.tsx)
+- `src/app/(guest)/rooms/` — rooms pages (moved from src/app/rooms/)
+- `src/app/(guest)/book/` — booking form (moved from src/app/book/)
+- `src/app/admin/login/page.tsx` — server: checks session (redirect if already logged in), renders LoginForm
+- `src/app/admin/login/LoginForm.tsx` — client: email+password form, signIn.email(), router.push('/admin') on success
+- `src/app/admin/(protected)/layout.tsx` — auth gate: auth.api.getSession(), redirect to /admin/login if null; renders AdminSidebar + main
+- `src/app/admin/(protected)/page.tsx` — dashboard home: 3 stat cards (pending/confirmed-this-month/total) + last 10 bookings table with status pills
+- `src/components/admin/AdminSidebar.tsx` — client: fixed 240px sidebar, nav links, sign out button, active state via usePathname
+- `src/app/api/admin/bookings/[id]/route.ts` — PATCH: admin-auth-gated confirm/cancel action, updates booking status
+- `src/components/admin/BookingRow.tsx` — client: single table row with optimistic status update + router.refresh(), exports BOOKING_ROW_GRID constant
+- `src/app/admin/(protected)/bookings/page.tsx` — server: full reservations table with All/Pending/Confirmed/Cancelled filter tabs (with counts), 25-per-page pagination, BookingRow client components
+- `src/app/api/admin/blocked-dates/route.ts` — POST: auth-gated insert of multiple blocked_dates rows; validates YYYY-MM-DD format; roomId null = property-wide
+- `src/app/api/admin/blocked-dates/[id]/route.ts` — DELETE: auth-gated remove one blocked date by id
+- `src/app/api/admin/seasonal-pricing/route.ts` — POST: auth-gated insert seasonal pricing rule; returns row joined with room name
+- `src/app/api/admin/seasonal-pricing/[id]/route.ts` — DELETE: auth-gated remove one pricing rule by id
+- `src/app/admin/(protected)/calendar/page.tsx` — server: fetches rooms + blocked_dates + seasonal_pricing, passes to CalendarManager; DB offline caught gracefully
+- `src/components/admin/CalendarManager.tsx` — client: two-tab UI — "Blocked Dates" (custom month calendar grid, multi-select, room scope, reason, delete list) + "Seasonal Pricing" (add form, table with delete); optimistic updates + router.refresh()
+- `src/lib/uploadthing.ts` — Uploadthing FileRouter: galleryImage endpoint (4MB, 10 files), BetterAuth session check via req.headers in middleware
+- `src/app/api/uploadthing/route.ts` — Uploadthing GET/POST route handler
+- `src/app/api/admin/rooms/route.ts` — GET: list all rooms (admin-gated)
+- `src/app/api/admin/rooms/[id]/route.ts` — PATCH: update room fields (name, description, maxGuests, basePriceUsd, amenities, isActive)
+- `src/app/api/admin/gallery/route.ts` — GET: list gallery images; POST: save new uploaded image to DB
+- `src/app/api/admin/gallery/[id]/route.ts` — PATCH: update alt/category/sortOrder; DELETE: remove image
+- `src/app/admin/(protected)/rooms/page.tsx` — server: fetches all rooms, passes to RoomEditorForm
+- `src/app/admin/(protected)/gallery/page.tsx` — server: fetches gallery images ordered by sortOrder, passes to GalleryManager
+- `src/components/admin/RoomEditorForm.tsx` — client: accordion list of rooms, each expands to inline editor with all fields + isActive toggle
+- `src/components/admin/GalleryManager.tsx` — client: Uploadthing dropzone + image grid (alt/category editable on blur, up/down reorder, delete)
+- `src/app/api/admin/content/route.ts` — GET: return all content rows grouped by pageKey; POST: upsert fields for a pageKey (select-then-update-or-insert per field)
+- `src/app/api/admin/seo/route.ts` — GET: return all pages_seo rows (admin-gated)
+- `src/app/api/admin/seo/[pageKey]/route.ts` — PATCH: upsert SEO row for pageKey (select-then-update-or-insert)
+- `src/app/admin/(protected)/content/page.tsx` — server: fetches all pages_content, groups by pageKey, passes to ContentEditor; DB offline caught gracefully
+- `src/app/admin/(protected)/seo/page.tsx` — server: fetches all pages_seo, builds SeoMap, passes to SeoEditor; DB offline caught gracefully
+- `src/components/admin/ContentEditor.tsx` — client: left-rail page tabs (Home/About/Dining/Activities) + right panel of labeled fields per page; per-page "Save" via POST /api/admin/content
+- `src/components/admin/SeoEditor.tsx` — client: left-rail page tabs (8 pages) with green dot for pages that have saved SEO + right panel with metaTitle (60-char counter), metaDescription (160-char counter), ogImage URL; per-page "Save" via PATCH /api/admin/seo/[pageKey]
+- `src/app/(guest)/dining/page.tsx` — dining page: dark-forest header + kitchen story split (FeatureSplit-style, ivory) + three meal moments cards (dark forest) + local ingredients 2-col grid (ivory) + CTASection
+- `src/app/(guest)/activities/page.tsx` — activities page: dark-forest header + full 6-activity grid with images + tags (ivory) + four-season highlights grid (dark forest) + CTASection
+- `src/app/(guest)/gallery/page.tsx` — server component: DB fetch with static fallback; dark forest header + CTASection; passes images to GalleryClient
+- `src/app/(guest)/gallery/GalleryClient.tsx` — client: category filter pills (All/Rooms/Dining/Activities/Views), CSS columns masonry grid, GSAP stagger reveal per filter change, lightbox with keyboard nav (Escape/arrows), body scroll lock, image counter in DM Mono
+- `src/app/(guest)/about/page.tsx` — client: 5-section about page (page header → origin story → philosophy → sustainability → team) + CTASection; GSAP scroll reveals per section; all copy matches hotel voice
+- `src/app/(guest)/contact/page.tsx` — server component: page header + contact info rows + WhatsApp CTA block + ContactForm + Find Us section with 4 route options
+- `src/app/(guest)/contact/ContactForm.tsx` — client: name/email/message form, POSTs to /api/contact, success/error states
+- `src/app/(guest)/contact/ContactReveal.tsx` — client: GSAP header line-reveal + scroll triggers; wraps entire page
+- `src/app/api/contact/route.ts` — POST: validates name/email/message, logs to console, fires Resend email (fire-and-forget), returns { success: true }
 
 ---
 
@@ -311,12 +370,5 @@ _(none yet)_
 
 ## Next Session
 
-**Start at:** Phase 6, Sprint 6.2 — BookingForm multi-step
-**Context:** Sprint 6.1 complete. AvailabilityCalendar is built and tested: renders correctly, range selection with terracotta highlights works, API endpoint returns blocked + booked dates. /book page exists as a skeleton shell.
-
-Sprint 6.2 builds the full multi-step BookingForm:
-- Step 1: Dates → embeds AvailabilityCalendar, "Continue" only enabled when both check-in + check-out are set
-- Step 2: Room selection → show available rooms for the selected dates (check against blocked dates/bookings), with RoomCard-style cards, pre-selects if ?room= param is in URL
-- Step 3: Guest details → name, email, phone, nationality, adults/children, special requests
-- Step 4: Confirm → summary of all selections, "Submit Enquiry" button → POST to /api/bookings
-The form should live in src/components/sections/BookingForm.tsx (client component) and the /book page should render it.
+**Start at:** Phase 10, Sprint 10.1 — Schema markup + sitemap + robots
+**Context:** Phase 9 complete. All animations applied and mobile-optimized. Sprint 10.1 adds: `LodgingBusiness` + `Hotel` + `Room` JSON-LD schema to relevant pages, next-sitemap config (block /admin, /api), robots.txt. Start by adding schema to the home page and rooms pages, then configure next-sitemap.

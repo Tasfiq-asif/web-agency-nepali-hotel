@@ -96,7 +96,7 @@ export function Navbar() {
             </div>
 
             {/* Mobile right — WhatsApp + Burger */}
-            <div className="md:hidden" style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+            <div className="flex md:hidden items-center" style={{ gap: 16 }}>
               <WhatsAppIcon onDark={onDark} href={WHATSAPP_HREF} />
               <BurgerButton open={menuOpen} onToggle={() => setMenuOpen(v => !v)} onDark={onDark} />
             </div>
@@ -126,6 +126,8 @@ function WhatsAppIcon({ onDark, href }: { onDark: boolean; href: string }) {
       style={{
         display:    'flex',
         alignItems: 'center',
+        padding:    '13px',
+        margin:     '-13px',
         color:      onDark ? 'rgba(245,240,232,0.6)' : 'var(--color-text-secondary)',
         transition: 'color 0.3s ease',
         position:   'relative',
@@ -160,7 +162,7 @@ function BurgerButton({ open, onToggle, onDark }: { open: boolean; onToggle: () 
         background:    'none',
         border:        'none',
         cursor:        'pointer',
-        padding:       '10px 4px',
+        padding:       '17px 8px',
         display:       'flex',
         flexDirection: 'column',
         gap:           8,
