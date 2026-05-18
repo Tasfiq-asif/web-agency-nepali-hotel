@@ -7,10 +7,14 @@ import { ActivityGrid } from '@/components/sections/ActivityGrid';
 import { TestimonialCarousel } from '@/components/sections/TestimonialCarousel';
 import { GalleryMasonry } from '@/components/sections/GalleryMasonry';
 import { CTASection } from '@/components/sections/CTASection';
+import { JsonLd } from '@/components/seo/JsonLd';
+import { hotelSchema } from '@/lib/schema';
 
 export default function Home() {
   return (
-    <main>
+    <>
+      <JsonLd data={hotelSchema()} />
+      <main>
       <HeroFullscreen />
       <IntroStatement />
       <StatStrip />
@@ -21,5 +25,6 @@ export default function Home() {
       <TestimonialCarousel />
       <CTASection />
     </main>
+    </>
   );
 }

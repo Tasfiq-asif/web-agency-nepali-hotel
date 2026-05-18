@@ -5,7 +5,7 @@ import { gsap } from '@/lib/gsap';
 import { RoomCard } from '@/components/ui/RoomCard';
 import { ROOMS, GUEST_FILTERS } from '@/data/rooms';
 
-export default function RoomsPage() {
+export function RoomsClient() {
   const [activeFilter, setActiveFilter] = useState(0);
   const gridRef = useRef<HTMLDivElement>(null);
   const headerRef = useRef<HTMLDivElement>(null);
@@ -32,18 +32,23 @@ export default function RoomsPage() {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     if (!gridRef.current) return;
 
-    const cards = gridRef.current.querySelectorAll('.room-card');
-    gsap.fromTo(
-      cards,
-      { opacity: 0, y: 40 },
-      {
-        opacity: 1,
-        y: 0,
-        duration: 0.7,
-        ease: 'power3.out',
-        stagger: 0.1,
-      }
-    );
+    const ctx = gsap.context(() => {
+      const cards = gridRef.current!.querySelectorAll('.room-card');
+      gsap.killTweensOf(cards);
+      gsap.fromTo(
+        cards,
+        { opacity: 0, y: 40 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.7,
+          ease: 'power3.out',
+          stagger: 0.1,
+        }
+      );
+    });
+
+    return () => ctx.revert();
   }, [activeFilter]);
 
   return (

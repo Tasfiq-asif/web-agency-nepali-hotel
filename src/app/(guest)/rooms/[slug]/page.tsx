@@ -2,6 +2,8 @@ import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import { ROOMS } from '@/data/rooms';
 import { RoomDetailClient } from './RoomDetailClient';
+import { JsonLd } from '@/components/seo/JsonLd';
+import { roomSchema } from '@/lib/schema';
 
 export function generateStaticParams() {
   return ROOMS.map((room) => ({ slug: room.slug }));
@@ -30,5 +32,10 @@ export default async function RoomPage(
   const { slug } = await params;
   const room = ROOMS.find((r) => r.slug === slug);
   if (!room) notFound();
-  return <RoomDetailClient room={room} />;
+  return (
+    <>
+      <JsonLd data={roomSchema(room)} />
+      <RoomDetailClient room={room} />
+    </>
+  );
 }
