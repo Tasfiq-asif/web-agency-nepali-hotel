@@ -269,6 +269,14 @@ body::after {
   outline-offset: 2px;
 }
 
+/* ─── AvailabilityCalendar root container ─── */
+
+.cal-root {
+  container-type: inline-size;
+  width: 100%;
+  min-width: 0;
+}
+
 /* ─── Gallery bento — responsive ─── */
 
 .gallery-bento {
