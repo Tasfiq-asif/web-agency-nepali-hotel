@@ -3,9 +3,13 @@
 import { useEffect, useRef } from 'react';
 import { gsap } from '@/lib/gsap';
 import { RoomCard } from '@/components/ui/RoomCard';
-import { ROOMS } from '@/data/rooms';
+import { type Room } from '@/data/rooms';
 
-export function RoomCardGrid() {
+interface Props {
+  rooms: Room[];
+}
+
+export function RoomCardGrid({ rooms }: Props) {
   const sectionRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
@@ -71,7 +75,7 @@ export function RoomCardGrid() {
 
         {/* Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-16">
-          {ROOMS.slice(0, 4).map((room) => (
+          {rooms.slice(0, 4).map((room) => (
             <RoomCard key={room.slug} {...room} />
           ))}
         </div>

@@ -1,15 +1,17 @@
-import type { Metadata } from 'next';
 import { db } from '@/db';
 import { galleryImages } from '@/db/schema';
 import { asc } from 'drizzle-orm';
+import { getPageSeo } from '@/lib/getSeo';
 import { GalleryClient } from './GalleryClient';
 import { CTASection } from '@/components/sections/CTASection';
 
-export const metadata: Metadata = {
-  title: 'Gallery',
-  description:
-    'Explore Mountain Nest Hotel through photography — panoramic Himalayan views, our rooms and suites, dining moments, and the landscapes of Nepal\'s Solukhumbu District.',
-};
+export async function generateMetadata() {
+  return getPageSeo('gallery', {
+    title: 'Gallery',
+    description:
+      "Explore Mountain Nest Hotel through photography — panoramic Himalayan views, our rooms and suites, dining moments, and the landscapes of Nepal's Solukhumbu District.",
+  });
+}
 
 type GalleryImage = {
   id: number
