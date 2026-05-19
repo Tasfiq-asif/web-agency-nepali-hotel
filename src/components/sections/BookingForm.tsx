@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import Image from 'next/image';
 import { AvailabilityCalendar, type DateRange } from '@/components/ui/AvailabilityCalendar';
-import { ROOMS } from '@/data/rooms';
+import { ROOMS as STATIC_ROOMS, type Room } from '@/data/rooms';
 
 // ── Color tokens ───────────────────────────────────────────────────────────────
 const C = {
@@ -95,6 +95,14 @@ export function BookingForm({ initialRoom }: Props) {
   const [focused,     setFocused]     = useState<string | null>(null);
   const [avail,       setAvail]       = useState<Record<string, boolean | null>>({});
   const [slideIndex,  setSlideIndex]  = useState(0);
+  const [rooms,       setRooms]       = useState<Room[]>(STATIC_ROOMS);
+
+  useEffect(() => {
+    fetch('/api/rooms')
+      .then(r => r.json() as Promise<{ rooms: Room[] }>)
+      .then(json => { if (json.rooms?.length) setRooms(json.rooms); })
+      .catch(() => {});
+  }, []);
 
   const [data, setData] = useState<BookingData>({
     checkIn:         null,
@@ -123,10 +131,10 @@ export function BookingForm({ initialRoom }: Props) {
     const from = toISO(data.checkIn);
     const to   = toISO(data.checkOut);
 
-    setAvail(Object.fromEntries(ROOMS.map(r => [r.slug, null])));
+    setAvail(Object.fromEntries(rooms.map(r => [r.slug, null])));
 
     Promise.all(
-      ROOMS.map(async room => {
+      rooms.map(async room => {
         try {
           const p    = new URLSearchParams({ roomSlug: room.slug, from, to });
           const res  = await fetch(`/api/availability?${p}`);
@@ -210,7 +218,7 @@ export function BookingForm({ initialRoom }: Props) {
     data.phone.trim().length > 5;
 
   const hasDates     = step1Valid;
-  const selectedRoom = data.roomSlug ? (ROOMS.find(r => r.slug === data.roomSlug) ?? null) : null;
+  const selectedRoom = data.roomSlug ? (rooms.find(r => r.slug === data.roomSlug) ?? null) : null;
   const nights       = data.checkIn && data.checkOut ? countNights(data.checkIn, data.checkOut) : 0;
   const totalPrice   = selectedRoom ? selectedRoom.pricePerNight * nights : 0;
 
@@ -220,7 +228,7 @@ export function BookingForm({ initialRoom }: Props) {
     fontSize:     isMobile ? 'clamp(2rem,7vw,3rem)' : 'var(--text-display-md)',
     fontWeight:   400,
     lineHeight:   1.1,
-    marginBottom: 'clamp(1.25rem,3vw,2.25rem)',
+    marginBottom: isMobile ? 'clamp(1.25rem,3vw,2.25rem)' : '1.25rem',
   };
 
   // ── Success state ─────────────────────────────────────────────────────────────
@@ -379,7 +387,7 @@ export function BookingForm({ initialRoom }: Props) {
   }
 
   // ── Room card ─────────────────────────────────────────────────────────────────
-  function RoomCard({ room }: { room: typeof ROOMS[0] }) {
+  function RoomCard({ room }: { room: Room }) {
     const selected    = data.roomSlug === room.slug;
     const roomAvail   = avail[room.slug];
     const unavailable = roomAvail === false;
@@ -464,13 +472,11 @@ export function BookingForm({ initialRoom }: Props) {
     <div style={{ width: '100%', minWidth: 0 }}>
       <p className="label" style={{ marginBottom: '0.75rem' }}>Step 01</p>
       <h2 style={headingStyle}>Choose your dates</h2>
-      <div style={{ maxWidth: 460, width: '100%' }}>
-        <AvailabilityCalendar
-          onSelect={handleDateSelect}
-          initialCheckIn={data.checkIn ?? undefined}
-          initialCheckOut={data.checkOut ?? undefined}
-        />
-      </div>
+      <AvailabilityCalendar
+        onSelect={handleDateSelect}
+        initialCheckIn={data.checkIn ?? undefined}
+        initialCheckOut={data.checkOut ?? undefined}
+      />
     </div>
   );
 
@@ -484,7 +490,7 @@ export function BookingForm({ initialRoom }: Props) {
         </p>
       )}
       <div style={{ display: 'flex', flexDirection: 'column', gap: isMobile ? '1rem' : '0.75rem' }}>
-        {ROOMS.map(room => <RoomCard key={room.slug} room={room} />)}
+        {rooms.map(room => <RoomCard key={room.slug} room={room} />)}
       </div>
     </div>
   );

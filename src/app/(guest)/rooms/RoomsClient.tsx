@@ -3,16 +3,20 @@
 import { useState, useEffect, useRef } from 'react';
 import { gsap } from '@/lib/gsap';
 import { RoomCard } from '@/components/ui/RoomCard';
-import { ROOMS, GUEST_FILTERS } from '@/data/rooms';
+import { type Room, GUEST_FILTERS } from '@/data/rooms';
 
-export function RoomsClient() {
+interface Props {
+  rooms: Room[];
+}
+
+export function RoomsClient({ rooms }: Props) {
   const [activeFilter, setActiveFilter] = useState(0);
   const gridRef = useRef<HTMLDivElement>(null);
   const headerRef = useRef<HTMLDivElement>(null);
 
   const filtered = activeFilter === 0
-    ? ROOMS
-    : ROOMS.filter((r) => r.maxGuests >= activeFilter);
+    ? rooms
+    : rooms.filter((r) => r.maxGuests >= activeFilter);
 
   useEffect(() => {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;

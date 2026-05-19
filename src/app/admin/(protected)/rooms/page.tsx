@@ -3,6 +3,7 @@ import { db } from '@/db';
 import { rooms } from '@/db/schema';
 import { asc } from 'drizzle-orm';
 import { RoomEditorForm } from '@/components/admin/RoomEditorForm';
+import { SeedRoomsButton } from '@/components/admin/SeedRoomsButton';
 
 export const metadata: Metadata = { title: 'Rooms | Admin' };
 
@@ -50,7 +51,7 @@ export default async function AdminRoomsPage() {
         </p>
       </div>
 
-      <RoomEditorForm initialRooms={roomList} />
+      {roomList.length === 0 ? <SeedRoomsButton /> : <RoomEditorForm initialRooms={roomList} />}
     </div>
   );
 }

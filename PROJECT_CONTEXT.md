@@ -1,6 +1,6 @@
 # Mountain Nest Hotel — Build Context
 
-Generated: 2026-05-16 | Last updated: 2026-05-19 (Sprint 10.2 — Core Web Vitals + a11y + visual QA)
+Generated: 2026-05-16 | Last updated: 2026-05-19 (Sprint 11 — Admin API round-trip)
 
 ---
 
@@ -236,6 +236,8 @@ sessions          — managed by BetterAuth
 ### Phase 10: SEO & QA ⏳
   - Sprint 10.1: Schema markup + sitemap + robots ✅
   - Sprint 10.2: Core Web Vitals + a11y + visual QA ✅
+### Phase 11: Admin API Round-Trip ✅
+  - Sprint 11: Rooms/SEO/content DB→guest wiring + seed mechanism ✅
 
 ---
 
@@ -263,6 +265,7 @@ sessions          — managed by BetterAuth
 - **2026-05-19** — Sprint 10.2 a11y: skip-to-content uses `transform: translateY(calc(-100% - 2rem))` hide + `:focus-visible` slide-in. Using `top: -100%` on `position: fixed` is unreliable in Chromium headless — transform is always correct.
 - **2026-05-19** — Sprint 10.2 metadata: dining/activities/about pages are `'use client'` components so metadata can't be co-located. Used route-level `layout.tsx` files (server components) that export metadata and render `<>{children}</>` — no visual impact, metadata applies correctly.
 - **2026-05-19** — Sprint 10.2 AvailabilityCalendar: added `containerType: 'inline-size'` on root wrapper to enable `cqw` units. Day number font changed from `1.1vw` (viewport-relative, ignores container) to `2.2cqw` (container-relative). Root + grid wrapper get `width: 100%; min-width: 0` to prevent flex overflow.
+- **2026-05-19** — Sprint 11: Admin→DB→guest round-trip. `src/lib/roomUtils.ts` `mergeRoom()` normalizes DB rows to `Room` display type (tags from static fallback if not in DB, images from DB `images[]` else static path). `src/app/api/rooms/route.ts` public endpoint returns active rooms from DB, falls back to static ROOMS if DB empty or offline. `src/app/api/admin/seed/route.ts` admin-only POST seeds 6 default rooms from static data via `onConflictDoNothing()`. `SeedRoomsButton.tsx` shown in admin/rooms when table is empty. `RoomCardGrid` and `RoomsClient` now accept `rooms` prop (home page and /rooms page fetch from DB server-side). `BookingForm` initializes rooms state from static ROOMS, fetches `/api/rooms` on mount to update with DB prices/names. `src/lib/getSeo.ts` helper queries `pages_seo` with hardcoded fallbacks — all guest pages now use `generateMetadata()` that reads from DB.
 - **2026-05-18** — Sprint 7.4: Uploadthing FileRouter uses `req.headers` (passed from middleware param) to auth-gate via BetterAuth — not `next/headers()`. RoomEditorForm is an accordion — clicking "Edit" on a room expands an inline form; saves via PATCH /api/admin/rooms/[id]. GalleryManager uses generateUploadDropzone from @uploadthing/react; after Uploadthing upload completes, client POSTs to /api/admin/gallery to save URL+alt+category to DB. Alt/category edits save on blur. Reorder uses sortOrder swap via two concurrent PATCHes. @uploadthing/react/styles.css imported in root layout (required for UT UI).
 
 ---
@@ -368,6 +371,11 @@ sessions          — managed by BetterAuth
 - `src/app/(guest)/dining/layout.tsx` — route-level metadata: title "Dining & Cuisine", description
 - `src/app/(guest)/activities/layout.tsx` — route-level metadata: title "Activities & Nature", description
 - `src/app/(guest)/about/layout.tsx` — route-level metadata: title "Our Story", description
+- `src/lib/roomUtils.ts` — `mergeRoom()` normalizes DB room rows to `Room` display type; uses static data fallback for tagline/imageSrc
+- `src/lib/getSeo.ts` — `getPageSeo(pageKey, fallback)` queries `pages_seo` table, returns Metadata with DB values overriding hardcoded fallbacks
+- `src/app/api/rooms/route.ts` — public GET: active rooms from DB merged via `mergeRoom()`, static ROOMS fallback if DB empty/offline
+- `src/app/api/admin/seed/route.ts` — admin-only POST: inserts 6 default rooms from static ROOMS data; `onConflictDoNothing()` on slug
+- `src/components/admin/SeedRoomsButton.tsx` — client: calls POST /api/admin/seed, shown in admin rooms page when table is empty
 
 ---
 
@@ -379,5 +387,5 @@ _(none yet)_
 
 ## Next Session
 
-**Start at:** PROJECT COMPLETE — all phases and sprints shipped ✅
-**Context:** Sprint 10.2 closed the build. All guest pages have unique titles/meta, WCAG focus-visible styles applied, skip-to-content link wired, AvailabilityCalendar fluid at all widths. Zero broken links. Zero a11y violations. Site is production-ready and deployable via Docker.
+**Start at:** Production-ready ✅ — deploy when DB is live
+**Context:** Sprint 11 wired the full admin→DB→guest loop. Rooms, SEO, and gallery all read from DB with static fallbacks. Admin can now seed rooms, edit them, and see changes on the guest site. All page metadata reads from `pages_seo` table with hardcoded fallbacks. BookingForm fetches live room list from `/api/rooms` on mount.
