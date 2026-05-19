@@ -237,8 +237,8 @@ export function AvailabilityCalendar({
 
   return (
     <div
-      className={className}
-      style={{ userSelect: 'none', WebkitUserSelect: 'none', width: '100%', minWidth: 0, containerType: 'inline-size' }}
+      className={['cal-root', className].filter(Boolean).join(' ')}
+      style={{ userSelect: 'none', WebkitUserSelect: 'none' }}
       aria-label="Availability calendar"
     >
 
@@ -423,7 +423,7 @@ export function AvailabilityCalendar({
                 <span
                   style={{
                     fontFamily: 'var(--font-mono)',
-                    fontSize: 'clamp(0.625rem, 2.2cqw, 0.875rem)',
+                    fontSize: 'clamp(0.625rem, 3.5%, 0.875rem)',
                     lineHeight: 1,
                     color: isEndpoint
                       ? CANVAS

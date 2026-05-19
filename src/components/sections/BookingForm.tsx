@@ -461,14 +461,16 @@ export function BookingForm({ initialRoom }: Props) {
 
   // ── Step bodies (content without nav row) ─────────────────────────────────────
   const step1Body = (
-    <div>
+    <div style={{ width: '100%', minWidth: 0 }}>
       <p className="label" style={{ marginBottom: '0.75rem' }}>Step 01</p>
       <h2 style={headingStyle}>Choose your dates</h2>
-      <AvailabilityCalendar
-        onSelect={handleDateSelect}
-        initialCheckIn={data.checkIn ?? undefined}
-        initialCheckOut={data.checkOut ?? undefined}
-      />
+      <div style={{ maxWidth: 460, width: '100%' }}>
+        <AvailabilityCalendar
+          onSelect={handleDateSelect}
+          initialCheckIn={data.checkIn ?? undefined}
+          initialCheckOut={data.checkOut ?? undefined}
+        />
+      </div>
     </div>
   );
 
@@ -737,7 +739,7 @@ export function BookingForm({ initialRoom }: Props) {
           {stepIndicator}
         </div>
         {/* Scrollable step content */}
-        <div style={{ flex: 1, overflowY: 'auto', padding: '2rem 3rem 1rem' }}>
+        <div style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', minWidth: 0, padding: '2rem 3rem 1rem' }}>
           {step === 1 && step1Body}
           {step === 2 && step2Body}
           {step === 3 && step3Body}
