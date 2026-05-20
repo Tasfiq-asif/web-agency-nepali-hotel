@@ -1,0 +1,293 @@
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #F5F0E8; color: #1C2B1A; font-family: system-ui, sans-serif; }
+  h2 { font-family: Georgia, serif; font-weight: 400; font-size: 1.2rem; margin-bottom: 0.3rem; }
+  .subtitle { color: #6B6558; font-size: 0.85rem; margin-bottom: 1.5rem; }
+
+  .split { display: flex; gap: 1.5rem; }
+  .panel { flex: 1; }
+
+  .layout-card {
+    cursor: pointer;
+    border: 2px solid #DDD8CE;
+    border-radius: 4px;
+    overflow: hidden;
+    background: #fff;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    margin-bottom: 0;
+  }
+  .layout-card:hover { border-color: #C4704F; box-shadow: 0 4px 20px rgba(196,112,79,0.15); }
+  .layout-card.selected { border-color: #C4704F; box-shadow: 0 4px 20px rgba(196,112,79,0.2); }
+
+  .card-label {
+    padding: 0.65rem 0.9rem 0.5rem;
+    display: flex; align-items: center; gap: 0.5rem;
+    border-top: 3px solid transparent;
+  }
+  .layout-card.selected .card-label { border-top-color: #C4704F; }
+  .letter {
+    width: 22px; height: 22px; border-radius: 50%;
+    background: #DDD8CE; display: flex; align-items: center; justify-content: center;
+    font-size: 0.65rem; font-weight: 600; color: #6B6558; flex-shrink: 0;
+  }
+  .layout-card.selected .letter { background: #C4704F; color: #F5F0E8; }
+  .card-name { font-size: 0.75rem; font-weight: 600; color: #1C2B1A; }
+  .recommended {
+    display: inline-block; padding: 1px 6px;
+    background: #C4704F; color: #F5F0E8;
+    font-size: 0.5rem; letter-spacing: 0.1em; text-transform: uppercase;
+    margin-left: 6px; vertical-align: middle;
+  }
+
+  /* Step label */
+  .step-chip {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 0.55rem; letter-spacing: 0.1em; text-transform: uppercase;
+    color: #6B6558; margin-bottom: 6px;
+  }
+  .step-chip span { font-size: 0.55rem; color: #DDD8CE; }
+
+  /* Booking shell */
+  .booking-shell {
+    display: flex; height: 280px;
+    border: 1px solid #DDD8CE;
+    overflow: hidden;
+    font-size: 0.65rem;
+  }
+
+  /* Form side (left) — same across all */
+  .form-side {
+    width: 54%; border-right: 1px solid #DDD8CE;
+    display: flex; flex-direction: column;
+    background: #F5F0E8;
+  }
+  .form-head { padding: 10px 12px 8px; border-bottom: 1px solid #DDD8CE; }
+  .step-track { display: flex; gap: 2px; margin-bottom: 5px; }
+  .track { flex: 1; height: 1.5px; }
+  .track.done { background: #1C2B1A; }
+  .track.active { background: #C4704F; }
+  .track.todo { background: #DDD8CE; }
+  .step-labels-row { display: flex; }
+  .step-lbl { flex: 1; font-size: 0.5rem; letter-spacing: 0.08em; text-transform: uppercase; text-align: center; color: #6B6558; }
+  .step-lbl.active { color: #C4704F; }
+  .step-lbl.done { color: #1C2B1A; }
+  .form-body { padding: 10px 12px; flex: 1; }
+  .form-title { font-family: Georgia, serif; font-size: 1rem; margin-bottom: 8px; color: #1C2B1A; }
+  .cal-mini { border: 1px solid #DDD8CE; padding: 6px 8px; }
+  .cal-hdr { display: flex; justify-content: space-between; font-family: Georgia, serif; font-style: italic; font-size: 0.72rem; color: #1C2B1A; margin-bottom: 5px; }
+  .cal-grid { display: grid; grid-template-columns: repeat(7,1fr); gap: 1px; }
+  .d { aspect-ratio:1; display:flex; align-items:center; justify-content:center; font-size:0.52rem; color:#1C2B1A; }
+  .d.h { color:#6B6558; font-size:0.48rem; }
+  .d.r { background:rgba(196,112,79,0.12); }
+  .d.e { background:#C4704F; color:#F5F0E8; border-radius:1px; }
+  .d.p { opacity:0.3; }
+  .form-foot { padding: 7px 12px; border-top: 1px solid #DDD8CE; display: flex; justify-content: flex-end; }
+  .btn-sm { padding: 5px 12px; border: 1px solid #C4704F; background: transparent; font-size: 0.52rem; letter-spacing: 0.12em; text-transform: uppercase; color: #C4704F; }
+
+  /* Summary side (right) */
+  .summary-side {
+    width: 46%; display: flex; flex-direction: column; overflow: hidden;
+  }
+
+  /* Option A right: atmospheric slideshow */
+  .right-atmo { width: 100%; flex: 1; position: relative; overflow: hidden; background: #1C2B1A; }
+  .right-atmo img { width: 100%; height: 100%; object-fit: cover; opacity: 0.7; }
+  .atmo-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(28,43,26,0.85) 0%, transparent 55%); }
+  .atmo-caption { position: absolute; bottom: 0; left: 0; right: 0; padding: 10px 12px; }
+  .atmo-tag { font-size: 0.48rem; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(245,240,232,0.5); margin-bottom: 3px; }
+  .atmo-hotel { font-family: Georgia, serif; font-weight: 400; font-size: 0.8rem; color: #F5F0E8; margin-bottom: 2px; }
+  .atmo-sub { font-size: 0.5rem; color: rgba(245,240,232,0.55); }
+  .atmo-dots { display: flex; gap: 4px; margin-top: 6px; }
+  .atmo-dot { width: 4px; height: 4px; border-radius: 50%; background: rgba(245,240,232,0.35); }
+  .atmo-dot.on { background: rgba(245,240,232,0.85); }
+  .right-partial { padding: 8px 10px; border-top: 1px solid #DDD8CE; background: #F5F0E8; }
+  .partial-label { font-size: 0.48rem; letter-spacing: 0.1em; text-transform: uppercase; color: #6B6558; margin-bottom: 2px; }
+  .partial-hint { font-size: 0.52rem; color: #6B6558; font-style: italic; }
+
+  /* Option B right: skeleton/progressive summary */
+  .right-summary-b { width: 100%; flex: 1; position: relative; overflow: hidden; background: #2D4A2A; }
+  .right-summary-b img { width: 100%; height: 100%; object-fit: cover; opacity: 0.5; }
+  .b-img-overlay { position: absolute; inset: 0; background: rgba(28,43,26,0.5); display: flex; align-items: center; justify-content: center; }
+  .b-placeholder-text { font-family: Georgia, serif; font-style: italic; font-size: 0.75rem; color: rgba(245,240,232,0.6); text-align: center; padding: 12px; }
+  .right-summary-block { padding: 8px 10px; background: #F5F0E8; }
+  .sum-row { display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid #DDD8CE; }
+  .sum-lbl { font-size: 0.5rem; letter-spacing: 0.1em; text-transform: uppercase; color: #6B6558; }
+  .sum-val { font-size: 0.55rem; color: #1C2B1A; }
+  .sum-val.pending { color: #DDD8CE; font-style: italic; }
+  .sum-total { display: flex; justify-content: space-between; padding: 5px 0 2px; }
+  .sum-total-lbl { font-size: 0.5rem; letter-spacing: 0.1em; text-transform: uppercase; color: #6B6558; }
+  .sum-total-val { font-family: Georgia, serif; font-size: 0.85rem; color: #6B6558; font-style: italic; }
+
+  .meta-block { padding: 0.65rem 0.9rem 0.8rem; border-top: 1px solid #DDD8CE; background: #faf8f4; }
+  .meta-title { font-size: 0.7rem; font-weight: 600; color: #1C2B1A; margin-bottom: 0.3rem; }
+  .meta-desc { font-size: 0.65rem; color: #6B6558; line-height: 1.5; }
+
+  .vs-label { text-align: center; font-size: 0.6rem; letter-spacing: 0.15em; text-transform: uppercase; color: #DDD8CE; margin: 0 0.5rem; display: flex; align-items: center; }
+</style>
+
+<h2>Right panel behaviour — what does it show before a room is selected?</h2>
+<p class="subtitle">The same form (Step 1 — Choose dates) is shown on both. The question is only about the right panel.</p>
+
+<div class="split">
+
+  <!-- OPTION A -->
+  <div class="panel">
+    <div class="layout-card" data-choice="a" onclick="toggleSelect(this)">
+      <div class="card-label">
+        <div class="letter">A</div>
+        <span class="card-name">Atmospheric slideshow until room chosen</span>
+      </div>
+
+      <!-- Step chip -->
+      <div style="padding: 6px 10px 0; background:#fff;">
+        <div class="step-chip">Step 1 <span>·</span> Choose Dates</div>
+      </div>
+
+      <div class="booking-shell" style="border:none;">
+        <!-- Left: form (Step 1 — Dates) -->
+        <div class="form-side">
+          <div class="form-head">
+            <div class="step-track">
+              <div class="track active"></div>
+              <div class="track todo"></div>
+              <div class="track todo"></div>
+              <div class="track todo"></div>
+            </div>
+            <div class="step-labels-row">
+              <div class="step-lbl active">Dates</div>
+              <div class="step-lbl">Room</div>
+              <div class="step-lbl">Details</div>
+              <div class="step-lbl">Confirm</div>
+            </div>
+          </div>
+          <div class="form-body">
+            <div class="form-title">Choose your dates</div>
+            <div class="cal-mini">
+              <div class="cal-hdr"><span>←</span><span>May 2026</span><span>→</span></div>
+              <div class="cal-grid">
+                <div class="d h">Su</div><div class="d h">Mo</div><div class="d h">Tu</div><div class="d h">We</div><div class="d h">Th</div><div class="d h">Fr</div><div class="d h">Sa</div>
+                <div class="d p">26</div><div class="d p">27</div><div class="d p">28</div><div class="d p">29</div><div class="d p">30</div><div class="d">1</div><div class="d">2</div>
+                <div class="d">3</div><div class="d">4</div><div class="d">5</div><div class="d">6</div><div class="d">7</div><div class="d">8</div><div class="d">9</div>
+                <div class="d">10</div><div class="d">11</div><div class="d">12</div><div class="d">13</div><div class="d">14</div><div class="d">15</div><div class="d">16</div>
+                <div class="d">17</div><div class="d">18</div><div class="d">19</div><div class="d">20</div><div class="d">21</div><div class="d e">22</div><div class="d r">23</div>
+                <div class="d r">24</div><div class="d r">25</div><div class="d r">26</div><div class="d r">27</div><div class="d r">28</div><div class="d e">29</div><div class="d">30</div>
+              </div>
+            </div>
+          </div>
+          <div class="form-foot"><button class="btn-sm">Continue →</button></div>
+        </div>
+
+        <!-- Right: atmospheric slideshow -->
+        <div class="summary-side" style="flex-direction:column;">
+          <div class="right-atmo" style="flex:1;">
+            <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=300&fit=crop" alt="Mountains">
+            <div class="atmo-overlay"></div>
+            <div class="atmo-caption">
+              <div class="atmo-tag">Mountain Nest Hotel</div>
+              <div class="atmo-hotel">Namche Bazaar, Nepal</div>
+              <div class="atmo-sub">3,440m · 6 rooms · Direct booking</div>
+              <div class="atmo-dots">
+                <div class="atmo-dot on"></div>
+                <div class="atmo-dot"></div>
+                <div class="atmo-dot"></div>
+                <div class="atmo-dot"></div>
+              </div>
+            </div>
+          </div>
+          <div class="right-partial">
+            <div class="partial-label">Your stay</div>
+            <div class="partial-hint">Select dates to begin →</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="meta-block">
+        <div class="meta-title">Right panel = hotel story until room is chosen</div>
+        <div class="meta-desc">A rotating slideshow of landscape + room photos keeps the right panel inspiring during Step 1. Once a room is selected in Step 2, the panel switches to show that room's image + summary.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- OPTION B -->
+  <div class="panel">
+    <div class="layout-card" data-choice="b" onclick="toggleSelect(this)">
+      <div class="card-label">
+        <div class="letter">B</div>
+        <span class="card-name">Progressive summary — builds as you go <span class="recommended">Recommended</span></span>
+      </div>
+
+      <div style="padding: 6px 10px 0; background:#fff;">
+        <div class="step-chip">Step 1 <span>·</span> Choose Dates</div>
+      </div>
+
+      <div class="booking-shell" style="border:none;">
+        <!-- Left: form (Step 1 — Dates) -->
+        <div class="form-side">
+          <div class="form-head">
+            <div class="step-track">
+              <div class="track active"></div>
+              <div class="track todo"></div>
+              <div class="track todo"></div>
+              <div class="track todo"></div>
+            </div>
+            <div class="step-labels-row">
+              <div class="step-lbl active">Dates</div>
+              <div class="step-lbl">Room</div>
+              <div class="step-lbl">Details</div>
+              <div class="step-lbl">Confirm</div>
+            </div>
+          </div>
+          <div class="form-body">
+            <div class="form-title">Choose your dates</div>
+            <div class="cal-mini">
+              <div class="cal-hdr"><span>←</span><span>May 2026</span><span>→</span></div>
+              <div class="cal-grid">
+                <div class="d h">Su</div><div class="d h">Mo</div><div class="d h">Tu</div><div class="d h">We</div><div class="d h">Th</div><div class="d h">Fr</div><div class="d h">Sa</div>
+                <div class="d p">26</div><div class="d p">27</div><div class="d p">28</div><div class="d p">29</div><div class="d p">30</div><div class="d">1</div><div class="d">2</div>
+                <div class="d">3</div><div class="d">4</div><div class="d">5</div><div class="d">6</div><div class="d">7</div><div class="d">8</div><div class="d">9</div>
+                <div class="d">10</div><div class="d">11</div><div class="d">12</div><div class="d">13</div><div class="d">14</div><div class="d">15</div><div class="d">16</div>
+                <div class="d">17</div><div class="d">18</div><div class="d">19</div><div class="d">20</div><div class="d">21</div><div class="d e">22</div><div class="d r">23</div>
+                <div class="d r">24</div><div class="d r">25</div><div class="d r">26</div><div class="d r">27</div><div class="d r">28</div><div class="d e">29</div><div class="d">30</div>
+              </div>
+            </div>
+          </div>
+          <div class="form-foot"><button class="btn-sm">Continue →</button></div>
+        </div>
+
+        <!-- Right: progressive summary -->
+        <div class="summary-side" style="flex-direction:column;">
+          <div class="right-summary-b" style="flex:1;">
+            <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=200&fit=crop" alt="Mountain">
+            <div class="b-img-overlay">
+              <div class="b-placeholder-text">Choose a room<br>to see it here</div>
+            </div>
+          </div>
+          <div class="right-summary-block">
+            <div class="sum-row">
+              <span class="sum-lbl">Room</span>
+              <span class="sum-val pending">not selected</span>
+            </div>
+            <div class="sum-row">
+              <span class="sum-lbl">Check-in</span>
+              <span class="sum-val">Fri, May 22</span>
+            </div>
+            <div class="sum-row">
+              <span class="sum-lbl">Check-out</span>
+              <span class="sum-val">Fri, May 29 · 7 nights</span>
+            </div>
+            <div class="sum-total">
+              <span class="sum-total-lbl">Estimated total</span>
+              <span class="sum-total-val">— select room</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="meta-block">
+        <div class="meta-title">Summary appears immediately, fills in as steps complete</div>
+        <div class="meta-desc">Dates appear in the summary as soon as they're selected. The photo area shows "choose a room to see it here" until Step 2. Once selected, the room image fills in and the total updates live. No moment where the panel feels empty or wasted.</div>
+      </div>
+    </div>
+  </div>
+
+</div>
