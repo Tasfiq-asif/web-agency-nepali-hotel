@@ -1,0 +1,470 @@
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body { background: #F5F0E8; color: #1C2B1A; font-family: system-ui, sans-serif; }
+
+  h2 { font-family: Georgia, serif; font-weight: 400; font-size: 1.25rem; margin-bottom: 0.4rem; }
+  .subtitle { color: #6B6558; font-size: 0.875rem; margin-bottom: 2rem; }
+
+  /* Layout cards */
+  .layouts { display: flex; gap: 1.5rem; margin-top: 1.5rem; }
+  .layout-card {
+    flex: 1;
+    cursor: pointer;
+    border: 2px solid #DDD8CE;
+    border-radius: 4px;
+    overflow: hidden;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    background: #fff;
+  }
+  .layout-card:hover { border-color: #C4704F; box-shadow: 0 4px 24px rgba(196,112,79,0.15); }
+  .layout-card.selected { border-color: #C4704F; box-shadow: 0 4px 24px rgba(196,112,79,0.2); }
+
+  .layout-label {
+    padding: 0.75rem 1rem 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    border-top: 3px solid transparent;
+  }
+  .layout-card.selected .layout-label { border-top-color: #C4704F; }
+  .layout-letter {
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    background: #DDD8CE;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    color: #6B6558;
+    flex-shrink: 0;
+  }
+  .layout-card.selected .layout-letter { background: #C4704F; color: #F5F0E8; }
+  .layout-name { font-size: 0.8rem; font-weight: 600; color: #1C2B1A; letter-spacing: 0.03em; }
+  .layout-desc { font-size: 0.72rem; color: #6B6558; margin-left: auto; text-align: right; }
+
+  .mockup-wrap {
+    height: 340px;
+    position: relative;
+    overflow: hidden;
+    background: #F5F0E8;
+  }
+
+  /* ── OPTION A: 50/50 Split ── */
+  .option-a { display: flex; height: 100%; }
+  .a-photo {
+    width: 50%;
+    background: linear-gradient(160deg, #2D4A2A 0%, #1C2B1A 100%);
+    position: relative;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+  .a-photo img { width: 100%; height: 100%; object-fit: cover; opacity: 0.85; }
+  .a-photo-overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(to right, rgba(28,43,26,0.35) 0%, transparent 100%);
+  }
+  .a-dots {
+    position: absolute; bottom: 16px; left: 50%; transform: translateX(-50%);
+    display: flex; gap: 6px;
+  }
+  .a-dot { width: 5px; height: 5px; border-radius: 50%; background: rgba(245,240,232,0.4); }
+  .a-dot.active { background: #F5F0E8; }
+  .a-form { width: 50%; display: flex; flex-direction: column; background: #F5F0E8; }
+  .a-form-inner { padding: 20px 22px; flex: 1; overflow-y: auto; }
+  .a-stepper { display: flex; gap: 2px; margin-bottom: 16px; }
+  .a-step { flex: 1; height: 2px; }
+  .a-step.done { background: #1C2B1A; }
+  .a-step.active { background: #C4704F; }
+  .a-step.todo { background: #DDD8CE; }
+  .a-step-labels { display: flex; margin-bottom: 14px; }
+  .a-step-label { flex: 1; font-size: 0.52rem; letter-spacing: 0.1em; text-transform: uppercase; color: #6B6558; text-align: center; }
+  .a-step-label.active { color: #C4704F; }
+  .a-step-label.done { color: #1C2B1A; }
+  .a-heading { font-family: Georgia, serif; font-size: 1.35rem; font-weight: 400; color: #1C2B1A; margin-bottom: 12px; line-height: 1.2; }
+  .a-cal { border: 1px solid #DDD8CE; padding: 10px; font-size: 0.65rem; color: #6B6558; }
+  .a-cal-header { display: flex; justify-content: space-between; font-family: Georgia, serif; font-style: italic; font-size: 0.8rem; color: #1C2B1A; margin-bottom: 8px; }
+  .a-cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
+  .a-day { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; font-size: 0.6rem; color: #1C2B1A; }
+  .a-day.range { background: rgba(196,112,79,0.12); }
+  .a-day.end { background: #C4704F; color: #F5F0E8; border-radius: 1px; }
+  .a-day.hdr { color: #6B6558; font-size: 0.55rem; }
+  .a-cta { margin-top: 12px; padding: 10px 0; border-top: 1px solid #DDD8CE; display: flex; justify-content: flex-end; }
+  .a-btn { padding: 8px 18px; border: 1px solid #C4704F; background: transparent; font-size: 0.6rem; letter-spacing: 0.12em; text-transform: uppercase; color: #C4704F; cursor: pointer; }
+
+  /* ── OPTION B: 60/40 Immersive ── */
+  .option-b { display: flex; height: 100%; }
+  .b-photo {
+    width: 60%;
+    position: relative;
+    overflow: hidden;
+    flex-shrink: 0;
+    background: linear-gradient(160deg, #2D4A2A 0%, #1C2B1A 100%);
+  }
+  .b-photo img { width: 100%; height: 100%; object-fit: cover; opacity: 0.8; }
+  .b-overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(to top, rgba(28,43,26,0.72) 0%, transparent 60%);
+  }
+  .b-caption {
+    position: absolute; bottom: 20px; left: 20px; right: 20px;
+  }
+  .b-caption-label { font-size: 0.55rem; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(245,240,232,0.6); margin-bottom: 4px; }
+  .b-caption-name { font-family: Georgia, serif; font-weight: 400; font-size: 1.1rem; color: #F5F0E8; margin-bottom: 2px; }
+  .b-caption-price { font-size: 0.6rem; color: rgba(245,240,232,0.7); }
+  .b-arrows {
+    position: absolute; top: 50%; right: 14px; transform: translateY(-50%);
+    display: flex; flex-direction: column; gap: 6px;
+  }
+  .b-arrow { width: 22px; height: 22px; border: 1px solid rgba(245,240,232,0.4); display: flex; align-items: center; justify-content: center; color: rgba(245,240,232,0.7); font-size: 0.7rem; }
+  .b-panel { width: 40%; background: #F5F0E8; display: flex; flex-direction: column; }
+  .b-panel-head {
+    padding: 16px 18px 12px;
+    border-bottom: 1px solid #DDD8CE;
+  }
+  .b-hotel { font-size: 0.55rem; letter-spacing: 0.14em; text-transform: uppercase; color: #6B6558; margin-bottom: 2px; }
+  .b-step-indicator { display: flex; align-items: center; gap: 4px; }
+  .b-num { font-size: 0.6rem; letter-spacing: 0.1em; color: #C4704F; font-variant-numeric: tabular-nums; }
+  .b-sep { font-size: 0.55rem; color: #DDD8CE; }
+  .b-step-name { font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase; color: #1C2B1A; }
+  .b-tracks { display: flex; gap: 3px; margin-top: 8px; }
+  .b-track { flex: 1; height: 1.5px; }
+  .b-track.done { background: #1C2B1A; }
+  .b-track.active { background: #C4704F; }
+  .b-track.todo { background: #DDD8CE; }
+  .b-body { padding: 14px 18px; flex: 1; }
+  .b-title { font-family: Georgia, serif; font-size: 1.1rem; font-weight: 400; margin-bottom: 10px; color: #1C2B1A; }
+  .b-field { margin-bottom: 10px; }
+  .b-field-label { font-size: 0.52rem; letter-spacing: 0.12em; text-transform: uppercase; color: #6B6558; display: block; margin-bottom: 3px; }
+  .b-field-input { width: 100%; padding: 5px 0; border: none; border-bottom: 1px solid #DDD8CE; background: transparent; font-size: 0.7rem; color: #1C2B1A; outline: none; }
+  .b-guests { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .b-foot { padding: 10px 18px 14px; border-top: 1px solid #DDD8CE; display: flex; justify-content: space-between; align-items: center; }
+  .b-back { font-size: 0.55rem; letter-spacing: 0.1em; text-transform: uppercase; color: #6B6558; text-decoration: underline; text-decoration-color: #DDD8CE; }
+  .b-btn { padding: 8px 16px; border: 1px solid #C4704F; background: transparent; font-size: 0.58rem; letter-spacing: 0.12em; text-transform: uppercase; color: #C4704F; }
+
+  /* ── OPTION C: Dual-panel adaptive ── */
+  .option-c { display: flex; height: 100%; }
+  .c-left {
+    width: 52%;
+    background: #F5F0E8;
+    padding: 18px 20px;
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid #DDD8CE;
+    overflow: hidden;
+  }
+  .c-step-bar { display: flex; gap: 3px; margin-bottom: 6px; }
+  .c-bar { flex: 1; height: 2px; }
+  .c-bar.done { background: #1C2B1A; }
+  .c-bar.active { background: #C4704F; }
+  .c-bar.todo { background: #DDD8CE; }
+  .c-step-labels { display: flex; margin-bottom: 14px; }
+  .c-step-l { flex: 1; font-size: 0.5rem; letter-spacing: 0.1em; text-transform: uppercase; text-align: center; color: #6B6558; }
+  .c-step-l.active { color: #C4704F; }
+  .c-step-l.done { color: #1C2B1A; }
+  .c-heading { font-family: Georgia, serif; font-size: 1.3rem; font-weight: 400; margin-bottom: 12px; color: #1C2B1A; }
+  .c-cal { border: 1px solid #DDD8CE; padding: 10px; flex: 1; }
+  .c-cal-header { display: flex; justify-content: space-between; font-family: Georgia, serif; font-style: italic; font-size: 0.8rem; color: #1C2B1A; margin-bottom: 8px; }
+  .c-cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
+  .c-day { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; font-size: 0.58rem; color: #1C2B1A; }
+  .c-day.range { background: rgba(196,112,79,0.12); }
+  .c-day.end { background: #C4704F; color: #F5F0E8; border-radius: 1px; }
+  .c-day.hdr { color: #6B6558; font-size: 0.52rem; }
+  .c-right {
+    width: 48%;
+    background: #2D4A2A;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .c-room-strip { flex: 1; position: relative; overflow: hidden; }
+  .c-room-strip img { width: 100%; height: 100%; object-fit: cover; opacity: 0.75; }
+  .c-room-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(28,43,26,0.9) 0%, transparent 50%); }
+  .c-room-info { position: absolute; bottom: 0; left: 0; right: 0; padding: 14px 16px; }
+  .c-room-name { font-family: Georgia, serif; font-size: 1rem; color: #F5F0E8; margin-bottom: 3px; }
+  .c-room-meta { font-size: 0.58rem; color: rgba(245,240,232,0.6); letter-spacing: 0.1em; }
+  .c-summary-bar {
+    padding: 10px 16px;
+    border-top: 1px solid rgba(245,240,232,0.12);
+    background: rgba(28,43,26,0.6);
+  }
+  .c-sum-row { display: flex; justify-content: space-between; margin-bottom: 5px; }
+  .c-sum-label { font-size: 0.52rem; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(245,240,232,0.5); }
+  .c-sum-value { font-size: 0.6rem; color: #F5F0E8; }
+  .c-total { display: flex; justify-content: space-between; border-top: 1px solid rgba(245,240,232,0.12); padding-top: 6px; margin-top: 2px; }
+  .c-total-label { font-size: 0.55rem; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(245,240,232,0.6); }
+  .c-total-value { font-family: Georgia, serif; font-size: 0.9rem; color: #F5F0E8; }
+  .c-nav { padding: 8px 16px; display: flex; justify-content: flex-end; border-top: 1px solid rgba(245,240,232,0.12); }
+  .c-btn { padding: 7px 14px; border: 1px solid #C4704F; background: transparent; font-size: 0.57rem; letter-spacing: 0.12em; text-transform: uppercase; color: #C4704F; }
+
+  .pros-cons { display: flex; gap: 0.5rem; margin-top: 0.5rem; }
+  .pros, .cons { flex: 1; }
+  .pros h5, .cons h5 { font-size: 0.65rem; font-weight: 600; margin-bottom: 0.3rem; }
+  .pros h5 { color: #3D6B3D; }
+  .cons h5 { color: #B85E40; }
+  .pros ul, .cons ul { padding-left: 1rem; }
+  .pros ul li, .cons ul li { font-size: 0.65rem; color: #6B6558; margin-bottom: 0.2rem; }
+
+  .layout-meta { padding: 0.75rem 1rem 1rem; border-top: 1px solid #DDD8CE; background: #faf8f4; }
+  .layout-meta-title { font-size: 0.72rem; font-weight: 600; color: #1C2B1A; margin-bottom: 0.3rem; }
+
+  .recommendation-badge {
+    display: inline-block;
+    padding: 2px 7px;
+    background: #C4704F;
+    color: #F5F0E8;
+    font-size: 0.55rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-left: 0.4rem;
+    vertical-align: middle;
+  }
+</style>
+
+<h2>Desktop Booking Layout — Which approach?</h2>
+<p class="subtitle">All three eliminate the negative space problem. Click to select the one that feels right for Mountain Nest.</p>
+
+<div class="layouts">
+
+  <!-- OPTION A: 50/50 Split -->
+  <div class="layout-card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="layout-label">
+      <div class="letter">A</div>
+      <span class="layout-name">50 / 50 — Photo + Form</span>
+      <span class="layout-desc">Classic split</span>
+    </div>
+    <div class="mockup-wrap">
+      <div class="option-a">
+        <div class="a-photo">
+          <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=500&fit=crop" alt="Mountain">
+          <div class="a-photo-overlay"></div>
+          <div class="a-dots">
+            <div class="a-dot active"></div>
+            <div class="a-dot"></div>
+            <div class="a-dot"></div>
+            <div class="a-dot"></div>
+          </div>
+        </div>
+        <div class="a-form">
+          <div class="a-form-inner">
+            <div class="a-stepper">
+              <div class="a-step active"></div>
+              <div class="a-step todo"></div>
+              <div class="a-step todo"></div>
+              <div class="a-step todo"></div>
+            </div>
+            <div class="a-step-labels">
+              <div class="a-step-label active">Dates</div>
+              <div class="a-step-label">Room</div>
+              <div class="a-step-label">Details</div>
+              <div class="a-step-label">Confirm</div>
+            </div>
+            <div class="a-heading">Choose your dates</div>
+            <div class="a-cal">
+              <div class="a-cal-header"><span>← </span><span>May 2026</span><span> →</span></div>
+              <div class="a-cal-grid">
+                <div class="a-day hdr">Su</div><div class="a-day hdr">Mo</div><div class="a-day hdr">Tu</div><div class="a-day hdr">We</div><div class="a-day hdr">Th</div><div class="a-day hdr">Fr</div><div class="a-day hdr">Sa</div>
+                <div class="a-day" style="opacity:0.3">26</div><div class="a-day" style="opacity:0.3">27</div><div class="a-day" style="opacity:0.3">28</div><div class="a-day" style="opacity:0.3">29</div><div class="a-day" style="opacity:0.3">30</div><div class="a-day">1</div><div class="a-day">2</div>
+                <div class="a-day">3</div><div class="a-day">4</div><div class="a-day">5</div><div class="a-day">6</div><div class="a-day">7</div><div class="a-day">8</div><div class="a-day">9</div>
+                <div class="a-day">10</div><div class="a-day">11</div><div class="a-day">12</div><div class="a-day">13</div><div class="a-day">14</div><div class="a-day">15</div><div class="a-day">16</div>
+                <div class="a-day">17</div><div class="a-day">18</div><div class="a-day">19</div><div class="a-day">20</div><div class="a-day">21</div><div class="a-day end">22</div><div class="a-day range">23</div>
+                <div class="a-day range">24</div><div class="a-day range">25</div><div class="a-day range">26</div><div class="a-day range">27</div><div class="a-day range">28</div><div class="a-day end">29</div><div class="a-day">30</div>
+                <div class="a-day">31</div>
+              </div>
+            </div>
+            <div class="a-cta"><button class="a-btn">Continue →</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="layout-meta">
+      <div class="layout-meta-title">Even split — photo inspires, form converts</div>
+      <div class="pros-cons">
+        <div class="pros"><h5>Strengths</h5><ul><li>Proven hotel pattern</li><li>Photo always visible</li><li>Balanced visual weight</li></ul></div>
+        <div class="cons"><h5>Weaknesses</h5><ul><li>Form feels cramped at 50%</li><li>Photo doesn't respond to step</li></ul></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- OPTION B: 60/40 Immersive — RECOMMENDED -->
+  <div class="layout-card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="layout-label">
+      <div class="letter">B</div>
+      <span class="layout-name">60 / 40 — Immersive + Smart Panel <span class="recommendation-badge">Recommended</span></span>
+    </div>
+    <div class="mockup-wrap">
+      <div class="option-b">
+        <div class="b-photo">
+          <img src="https://images.unsplash.com/photo-1516912481808-3406841bd33c?w=500&h=400&fit=crop" alt="Mountain view">
+          <div class="b-overlay"></div>
+          <div class="b-caption">
+            <div class="b-caption-label">Currently viewing</div>
+            <div class="b-caption-name">Himalayan Suite</div>
+            <div class="b-caption-price">$180 / night · Panoramic mountain views</div>
+          </div>
+          <div class="b-arrows">
+            <div class="b-arrow">↑</div>
+            <div class="b-arrow">↓</div>
+          </div>
+        </div>
+        <div class="b-panel">
+          <div class="b-panel-head">
+            <div class="b-hotel">Mountain Nest Hotel</div>
+            <div class="b-step-indicator">
+              <span class="b-num">02</span>
+              <span class="b-sep">/</span>
+              <span class="b-num" style="color:#6B6558">04</span>
+              <span class="b-sep">·</span>
+              <span class="b-step-name">Select Room</span>
+            </div>
+            <div class="b-tracks">
+              <div class="b-track done"></div>
+              <div class="b-track active"></div>
+              <div class="b-track todo"></div>
+              <div class="b-track todo"></div>
+            </div>
+          </div>
+          <div class="b-body">
+            <div class="b-title">Select your room</div>
+            <div style="font-size:0.65rem;color:#6B6558;margin-bottom:10px;">May 22 → May 29 · 7 nights</div>
+            <!-- Compact room list -->
+            <div style="display:flex;flex-direction:column;gap:5px;">
+              <div style="display:flex;align-items:center;gap:8px;padding:6px 8px;border:1px solid #C4704F;background:rgba(196,112,79,0.04);cursor:pointer;">
+                <div style="width:38px;height:28px;background:#2D4A2A;flex-shrink:0;overflow:hidden;"><img src="https://images.unsplash.com/photo-1516912481808-3406841bd33c?w=80&h=60&fit=crop" style="width:100%;height:100%;object-fit:cover;opacity:0.8;"></div>
+                <div style="flex:1;">
+                  <div style="font-size:0.65rem;color:#1C2B1A;font-family:Georgia,serif;">Himalayan Suite</div>
+                  <div style="font-size:0.55rem;color:#6B6558;">Up to 3 guests</div>
+                </div>
+                <div style="font-size:0.65rem;color:#C4704F;font-family:Georgia,serif;">$180</div>
+              </div>
+              <div style="display:flex;align-items:center;gap:8px;padding:6px 8px;border:1px solid #DDD8CE;cursor:pointer;">
+                <div style="width:38px;height:28px;background:#2D4A2A;flex-shrink:0;overflow:hidden;"><img src="https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=80&h=60&fit=crop" style="width:100%;height:100%;object-fit:cover;opacity:0.8;"></div>
+                <div style="flex:1;">
+                  <div style="font-size:0.65rem;color:#1C2B1A;font-family:Georgia,serif;">Forest Retreat</div>
+                  <div style="font-size:0.55rem;color:#6B6558;">Up to 2 guests</div>
+                </div>
+                <div style="font-size:0.65rem;color:#1C2B1A;font-family:Georgia,serif;">$140</div>
+              </div>
+              <div style="display:flex;align-items:center;gap:8px;padding:6px 8px;border:1px solid #DDD8CE;cursor:pointer;">
+                <div style="width:38px;height:28px;background:#2D4A2A;flex-shrink:0;overflow:hidden;"><img src="https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=80&h=60&fit=crop" style="width:100%;height:100%;object-fit:cover;opacity:0.8;"></div>
+                <div style="flex:1;">
+                  <div style="font-size:0.65rem;color:#1C2B1A;font-family:Georgia,serif;">Summit Lodge</div>
+                  <div style="font-size:0.55rem;color:#6B6558;">Up to 4 guests</div>
+                </div>
+                <div style="font-size:0.65rem;color:#1C2B1A;font-family:Georgia,serif;">$260</div>
+              </div>
+            </div>
+          </div>
+          <div class="b-foot">
+            <span class="b-back">← Back</span>
+            <button class="b-btn">Continue →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="layout-meta">
+      <div class="layout-meta-title">Photo reacts to the selected room — immersive + functional</div>
+      <div class="pros-cons">
+        <div class="pros"><h5>Strengths</h5><ul><li>Photo shows selected room</li><li>40% panel fits all form content</li><li>Premium hotel brand signal</li></ul></div>
+        <div class="cons"><h5>Weaknesses</h5><ul><li>More complex to build</li><li>Left panel needs all room images</li></ul></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- OPTION C: Form left, Summary right -->
+  <div class="layout-card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="layout-label">
+      <div class="letter">C</div>
+      <span class="layout-name">52 / 48 — Form + Live Summary</span>
+      <span class="layout-desc">Booking.com-style</span>
+    </div>
+    <div class="mockup-wrap">
+      <div class="option-c">
+        <div class="c-left">
+          <div class="c-step-bar">
+            <div class="c-bar done"></div>
+            <div class="c-bar done"></div>
+            <div class="c-bar active"></div>
+            <div class="c-bar todo"></div>
+          </div>
+          <div class="c-step-labels">
+            <div class="c-step-l done">Dates</div>
+            <div class="c-step-l done">Room</div>
+            <div class="c-step-l active">Details</div>
+            <div class="c-step-l">Confirm</div>
+          </div>
+          <div class="c-heading">Your details</div>
+          <div class="b-field">
+            <span class="b-field-label">Full Name *</span>
+            <input class="b-field-input" placeholder="As it appears on your passport" disabled>
+          </div>
+          <div class="b-field">
+            <span class="b-field-label">Email Address *</span>
+            <input class="b-field-input" placeholder="We'll send your confirmation here" disabled>
+          </div>
+          <div class="b-field">
+            <span class="b-field-label">Phone Number *</span>
+            <input class="b-field-input" placeholder="+1 000 000 0000" disabled>
+          </div>
+          <div class="b-guests">
+            <div class="b-field">
+              <span class="b-field-label">Adults</span>
+              <div style="display:flex;align-items:center;gap:0;margin-top:4px;">
+                <div style="width:28px;height:28px;border:1px solid #DDD8CE;display:flex;align-items:center;justify-content:center;font-size:0.8rem;color:#6B6558;">−</div>
+                <div style="width:32px;height:28px;border-top:1px solid #DDD8CE;border-bottom:1px solid #DDD8CE;display:flex;align-items:center;justify-content:center;font-size:0.7rem;">2</div>
+                <div style="width:28px;height:28px;border:1px solid #DDD8CE;display:flex;align-items:center;justify-content:center;font-size:0.8rem;color:#6B6558;">+</div>
+              </div>
+            </div>
+            <div class="b-field">
+              <span class="b-field-label">Children</span>
+              <div style="display:flex;align-items:center;gap:0;margin-top:4px;">
+                <div style="width:28px;height:28px;border:1px solid #DDD8CE;display:flex;align-items:center;justify-content:center;font-size:0.8rem;color:#6B6558;opacity:0.35;">−</div>
+                <div style="width:32px;height:28px;border-top:1px solid #DDD8CE;border-bottom:1px solid #DDD8CE;display:flex;align-items:center;justify-content:center;font-size:0.7rem;">0</div>
+                <div style="width:28px;height:28px;border:1px solid #DDD8CE;display:flex;align-items:center;justify-content:center;font-size:0.8rem;color:#6B6558;">+</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="c-right">
+          <div class="c-room-strip">
+            <img src="https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=400&h=220&fit=crop" alt="Room">
+            <div class="c-room-overlay"></div>
+            <div class="c-room-info">
+              <div class="c-room-name">Summit Lodge</div>
+              <div class="c-room-meta">Private terrace · Hot tub · Up to 4 guests</div>
+            </div>
+          </div>
+          <div class="c-summary-bar">
+            <div class="c-sum-row">
+              <span class="c-sum-label">Check-in</span>
+              <span class="c-sum-value">Fri, May 22</span>
+            </div>
+            <div class="c-sum-row">
+              <span class="c-sum-label">Check-out</span>
+              <span class="c-sum-value">Fri, May 29</span>
+            </div>
+            <div class="c-sum-row">
+              <span class="c-sum-label">Guests</span>
+              <span class="c-sum-value">2 adults</span>
+            </div>
+            <div class="c-total">
+              <span class="c-total-label">Estimated</span>
+              <span class="c-total-value">$1,820</span>
+            </div>
+          </div>
+          <div class="c-nav">
+            <button class="c-btn">Continue →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="layout-meta">
+      <div class="layout-meta-title">Form left, live booking summary right — maximum clarity</div>
+      <div class="pros-cons">
+        <div class="pros"><h5>Strengths</h5><ul><li>Guest sees full summary always</li><li>No scrolling to confirm details</li><li>Easiest to build</li></ul></div>
+        <div class="cons"><h5>Weaknesses</h5><ul><li>Less aspirational / more transactional</li><li>Right panel repetitive early in flow</li></ul></div>
+      </div>
+    </div>
+  </div>
+
+</div>
