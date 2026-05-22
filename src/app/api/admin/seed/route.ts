@@ -17,7 +17,7 @@ export async function POST() {
       maxGuests: r.maxGuests,
       basePriceUsd: r.pricePerNight.toFixed(2),
       amenities: r.amenities,
-      images: [{ url: r.imageSrc, alt: r.name }],
+      images: r.images.map(url => ({ url, alt: r.name })),
       isActive: true,
     }));
 

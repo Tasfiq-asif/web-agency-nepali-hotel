@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { gsap } from '@/lib/gsap';
@@ -12,45 +12,47 @@ interface Props {
 
 export function RoomDetailClient({ room }: Props) {
   const contentRef = useRef<HTMLElement>(null);
+  const heroImgRef = useRef<HTMLDivElement>(null);
+  const [activeImg, setActiveImg] = useState(room.imageSrc);
+
+  const switchImage = useCallback((src: string) => {
+    if (src === activeImg) return;
+    if (heroImgRef.current) {
+      gsap.to(heroImgRef.current, {
+        opacity: 0,
+        duration: 0.35,
+        ease: 'power2.in',
+        onComplete: () => {
+          setActiveImg(src);
+          gsap.to(heroImgRef.current, { opacity: 1, duration: 0.45, ease: 'power2.out' });
+        },
+      });
+    }
+  }, [activeImg]);
 
   useEffect(() => {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
     const ctx = gsap.context(() => {
-      // Hero elements slide up on mount
       gsap.fromTo(
         '.room-hero-label, .room-hero-headline, .room-hero-tagline',
         { opacity: 0, y: 40 },
-        {
-          opacity: 1,
-          y: 0,
-          duration: 1,
-          ease: 'power3.out',
-          stagger: 0.12,
-          delay: 0.15,
-        }
+        { opacity: 1, y: 0, duration: 1, ease: 'power3.out', stagger: 0.12, delay: 0.15 }
       );
-
-      // Content section reveals on scroll
       gsap.fromTo(
         '.detail-reveal',
         { opacity: 0, y: 30 },
         {
-          opacity: 1,
-          y: 0,
-          duration: 0.8,
-          ease: 'power3.out',
-          stagger: 0.1,
-          scrollTrigger: {
-            trigger: contentRef.current,
-            start: 'top 75%',
-          },
+          opacity: 1, y: 0, duration: 0.8, ease: 'power3.out', stagger: 0.1,
+          scrollTrigger: { trigger: contentRef.current, start: 'top 75%' },
         }
       );
     });
 
     return () => ctx.revert();
   }, []);
+
+  const galleryImages = room.images?.length ? room.images : [room.imageSrc];
 
   return (
     <main id="main-content">
@@ -59,14 +61,16 @@ export function RoomDetailClient({ room }: Props) {
         className="relative"
         style={{ height: '80vh', minHeight: 520 }}
       >
-        <Image
-          src={room.imageSrc}
-          alt={room.name}
-          fill
-          priority
-          sizes="100vw"
-          className="object-cover"
-        />
+        <div ref={heroImgRef} className="absolute inset-0">
+          <Image
+            src={activeImg}
+            alt={room.name}
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover"
+          />
+        </div>
 
         {/* Dark gradient overlay — heavier at bottom for text legibility */}
         <div
@@ -121,6 +125,54 @@ export function RoomDetailClient({ room }: Props) {
           </p>
         </div>
       </div>
+
+      {/* ── Thumbnail Strip ── */}
+      {galleryImages.length > 1 && (
+        <div
+          style={{
+            background: 'var(--color-ink)',
+            padding: '12px 0',
+            overflowX: 'auto',
+          }}
+        >
+          <div
+            className="container"
+            style={{ display: 'flex', gap: 8, alignItems: 'center' }}
+          >
+            {galleryImages.map((src, i) => (
+              <button
+                key={src}
+                onClick={() => switchImage(src)}
+                aria-label={`View photo ${i + 1}`}
+                style={{
+                  position: 'relative',
+                  flexShrink: 0,
+                  width: 96,
+                  height: 64,
+                  border: src === activeImg
+                    ? '2px solid var(--color-accent)'
+                    : '2px solid transparent',
+                  padding: 0,
+                  cursor: 'pointer',
+                  transition: 'border-color 0.2s, opacity 0.2s',
+                  opacity: src === activeImg ? 1 : 0.55,
+                  background: 'none',
+                }}
+                onMouseEnter={e => { if (src !== activeImg) (e.currentTarget as HTMLButtonElement).style.opacity = '0.85'; }}
+                onMouseLeave={e => { if (src !== activeImg) (e.currentTarget as HTMLButtonElement).style.opacity = '0.55'; }}
+              >
+                <Image
+                  src={src}
+                  alt={`${room.name} photo ${i + 1}`}
+                  fill
+                  sizes="96px"
+                  className="object-cover"
+                />
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* ── Main Content ── */}
       <section ref={contentRef} className="section bg-canvas">
