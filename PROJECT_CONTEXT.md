@@ -25,7 +25,7 @@ Generated: 2026-05-16 | Last updated: 2026-05-19 (Sprint 11 — Admin API round-
 | Animation | GSAP + Lenis | Same as Starlyn — import patterns from Starlyn lib/ |
 | Auth | **BetterAuth** | Admin dashboard only — single admin user |
 | ORM | **Drizzle ORM** | BetterAuth official recommendation |
-| Database | **PostgreSQL** | Self-hosted on user's VPS |
+| Database | **PostgreSQL** | Neon serverless — `@neondatabase/serverless` + `drizzle-orm/neon-http` |
 | Email | **Resend** | Booking inquiry confirmations + admin notifications |
 | Image upload | **Uploadthing** | Admin gallery + room photo uploads |
 | SEO | **next-sitemap** | Auto sitemap generation |
@@ -189,7 +189,7 @@ sessions          — managed by BetterAuth
 
 - **BetterAuth** — admin auth (single admin user, email+password)
 - **Drizzle ORM** — DB queries, migrations
-- **PostgreSQL** — self-hosted VPS (user provides DB_URL)
+- **PostgreSQL** — Neon serverless (neon.tech project, user provides DATABASE_URL)
 - **Resend** — booking confirmation emails + admin alerts
 - **Uploadthing** — admin image uploads
 - **next-sitemap** — automated sitemap
@@ -246,6 +246,7 @@ sessions          — managed by BetterAuth
 - **2026-05-16** — Auth: BetterAuth chosen over NextAuth. Pairs natively with Drizzle, simpler session management for single-admin use case.
 - **2026-05-16** — Payment: No Stripe for now. Booking model is inquiry-to-confirm. Admin confirms manually, sends payment details separately.
 - **2026-05-16** — Database: Self-hosted PostgreSQL on user's VPS. DB_URL provided via .env. Drizzle handles migrations.
+- **2026-05-22** — Database migrated to Neon serverless PostgreSQL. `src/db/index.ts` now uses `@neondatabase/serverless` `neon()` + `drizzle-orm/neon-http` instead of `pg` Pool. No schema changes — just the driver swap. Drizzle migrations still run against `DATABASE_URL` via drizzle-kit.
 - **2026-05-16** — Fonts revised: Cormorant (display) + Jost (body) + DM Mono (labels). Replaced Fraunces (too quirky/wonky) and Plus Jakarta Sans (too startup-adjacent). Cormorant is old-style serif with artisanal, old-world warmth — italics available, weights 300–600. Jost is geometric humanist, clean and premium.
 - **2026-05-16** — Font replaced again: Gloock → Cormorant. Gloock is single-weight with no italic support. Cormorant offers weights 300–600, normal + italic, same old-world warmth with far more flexibility.
 - **2026-05-16** — Heading font-weight: 400 default; can use 300 or 500 with Cormorant (multi-weight).

@@ -19,12 +19,17 @@ export function mergeRoom(dbRow: DbRoomRow): Room {
   const imageSrc = imagesArr[0]?.url ?? staticRoom?.imageSrc ?? `/images/rooms/${dbRow.slug}.webp`;
   const amenities = Array.isArray(dbRow.amenities) ? (dbRow.amenities as string[]) : (staticRoom?.amenities ?? []);
 
+  const images = imagesArr.length
+    ? imagesArr.map(i => i.url)
+    : (staticRoom?.images ?? [imageSrc]);
+
   return {
     slug: dbRow.slug,
     name: dbRow.name,
     tagline: staticRoom?.tagline ?? dbRow.description.split('.')[0].trim(),
     description: dbRow.description,
     imageSrc,
+    images,
     amenities,
     maxGuests: dbRow.maxGuests,
     pricePerNight: parseFloat(dbRow.basePriceUsd),
