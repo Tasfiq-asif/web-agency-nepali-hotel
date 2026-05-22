@@ -83,6 +83,173 @@ function useMobile(breakpoint = 1024) {
   return isMobile;
 }
 
+// ── Nav row ────────────────────────────────────────────────────────────────────
+// Defined outside BookingForm so React never re-mounts it on re-renders.
+function NavRow({
+  canContinue,
+  onContinue,
+  onBack,
+  label = 'Continue',
+  isSubmit = false,
+  isMobile,
+  submitting,
+}: {
+  canContinue: boolean;
+  onContinue:  () => void;
+  onBack?:     () => void;
+  label?:      string;
+  isSubmit?:   boolean;
+  isMobile:    boolean;
+  submitting:  boolean;
+}) {
+  const continueBtn = (
+    <button
+      type="button"
+      onClick={onContinue}
+      disabled={!canContinue || (isSubmit && submitting)}
+      className="btn-wipe"
+      style={{
+        width:         isMobile ? '100%' : 'auto',
+        padding:       isMobile ? '1.125rem 2rem' : '1rem 2.5rem',
+        border:        `1px solid ${canContinue ? C.terracotta : C.hairline}`,
+        background:    'transparent',
+        cursor:        canContinue ? (isSubmit && submitting ? 'wait' : 'pointer') : 'not-allowed',
+        fontFamily:    'var(--font-mono)',
+        fontSize:      'var(--text-button)',
+        letterSpacing: '0.15em',
+        textTransform: 'uppercase',
+        color:         canContinue ? C.terracotta : C.muted,
+        opacity:       canContinue ? (isSubmit && submitting ? 0.6 : 1) : 0.45,
+        transition:    'color 0.42s cubic-bezier(0.22,1,0.36,1)',
+      }}
+    >
+      {isSubmit && submitting ? 'Sending ···' : label}
+    </button>
+  );
+
+  if (isMobile) {
+    return (
+      <div style={{ marginTop: 'clamp(2rem,5vw,3rem)', paddingTop: '1.5rem', borderTop: `1px solid ${C.hairline}` }}>
+        {onBack && (
+          <button type="button" onClick={onBack}
+            style={{ display: 'block', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-mono)', fontSize: 'var(--text-label)', letterSpacing: '0.12em', textTransform: 'uppercase', color: C.muted, marginBottom: '1rem', padding: 0 }}>
+            ← Back
+          </button>
+        )}
+        {continueBtn}
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: onBack ? 'space-between' : 'flex-end' }}>
+      {onBack && (
+        <button type="button" onClick={onBack}
+          style={{ background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-mono)', fontSize: 'var(--text-label)', letterSpacing: '0.12em', textTransform: 'uppercase', color: C.muted, textDecoration: 'underline', textDecorationColor: C.hairline }}>
+          ← Back
+        </button>
+      )}
+      {continueBtn}
+    </div>
+  );
+}
+
+// ── Room card ──────────────────────────────────────────────────────────────────
+// Defined outside BookingForm so selecting a room doesn't remount + blink images.
+function RoomCard({
+  room,
+  selectedSlug,
+  avail,
+  isMobile,
+  nights,
+  onSelect,
+}: {
+  room:         Room;
+  selectedSlug: string | null;
+  avail:        Record<string, boolean | null>;
+  isMobile:     boolean;
+  nights:       number;
+  onSelect:     (slug: string) => void;
+}) {
+  const selected    = selectedSlug === room.slug;
+  const roomAvail   = avail[room.slug];
+  const unavailable = roomAvail === false;
+  const loading     = roomAvail === null;
+  const availColor  = loading ? C.muted : unavailable ? '#B85E40' : '#3D6B3D';
+  const availLabel  = loading ? '···' : unavailable ? 'Unavailable' : 'Available';
+
+  return (
+    <button
+      type="button"
+      onClick={() => !unavailable && onSelect(room.slug)}
+      disabled={unavailable}
+      style={{
+        display:       'flex',
+        flexDirection: isMobile ? 'column' : 'row',
+        alignItems:    'stretch',
+        border:        `1px solid ${selected ? C.terracotta : C.hairline}`,
+        background:    selected ? 'rgba(196,112,79,0.04)' : C.canvas,
+        cursor:        unavailable ? 'not-allowed' : 'pointer',
+        opacity:       unavailable ? 0.4 : 1,
+        textAlign:     'left',
+        padding:       0,
+        transition:    'border-color 0.2s ease, background 0.2s ease',
+        overflow:      'hidden',
+        position:      'relative',
+      }}
+    >
+      {selected && (
+        <div style={
+          isMobile
+            ? { position: 'absolute', left: 0, right: 0, top: 0, height: 3, background: C.terracotta }
+            : { position: 'absolute', left: 0, top: 0, bottom: 0, width: 3, background: C.terracotta }
+        } />
+      )}
+
+      {isMobile ? (
+        <div style={{ width: '100%', aspectRatio: '3/2', position: 'relative', overflow: 'hidden' }}>
+          <Image src={room.imageSrc} alt={room.name} fill sizes="100vw" style={{ objectFit: 'cover' }} />
+          <div style={{ position: 'absolute', top: 12, right: 12, padding: '0.25rem 0.625rem', background: unavailable ? 'rgba(28,43,26,0.75)' : 'rgba(28,43,26,0.7)', fontFamily: 'var(--font-mono)', fontSize: '0.6rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: loading ? 'rgba(245,240,232,0.6)' : unavailable ? '#E8967A' : '#A8CCA8' }}>
+            {availLabel}
+          </div>
+        </div>
+      ) : (
+        <div style={{ width: 120, minHeight: 96, flexShrink: 0, position: 'relative' }}>
+          <Image src={room.imageSrc} alt={room.name} fill sizes="120px" style={{ objectFit: 'cover' }} />
+        </div>
+      )}
+
+      <div style={{ flex: 1, padding: isMobile ? '1rem 1.125rem 1.125rem' : '0.875rem 1.125rem', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: '0.3rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '0.75rem' }}>
+          <p style={{ fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'var(--text-body-lg)', color: C.ink, lineHeight: 1.2 }}>
+            {room.name}
+          </p>
+          <p style={{ fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'var(--text-body-lg)', color: selected ? C.terracotta : C.ink, whiteSpace: 'nowrap', lineHeight: 1.2, flexShrink: 0 }}>
+            ${room.pricePerNight}
+            <span style={{ fontFamily: 'var(--font-body)', fontSize: '0.7em', color: C.muted }}>/night</span>
+          </p>
+        </div>
+        <p style={{ color: C.muted, fontSize: 'var(--text-body-sm)', lineHeight: 1.35 }}>{room.tagline}</p>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '0.25rem' }}>
+          <span style={{ fontFamily: 'var(--font-mono)', fontSize: 'var(--text-label)', letterSpacing: '0.1em', textTransform: 'uppercase', color: C.muted }}>
+            Up to {room.maxGuests} guests
+          </span>
+          {!isMobile && (
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 'var(--text-label)', letterSpacing: '0.1em', textTransform: 'uppercase', color: availColor }}>
+              {availLabel}
+            </span>
+          )}
+          {isMobile && nights > 0 && (
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 'var(--text-label)', letterSpacing: '0.1em', color: selected ? C.terracotta : C.muted }}>
+              ${(room.pricePerNight * nights).toLocaleString()} est.
+            </span>
+          )}
+        </div>
+      </div>
+    </button>
+  );
+}
+
 // ── Component ──────────────────────────────────────────────────────────────────
 export function BookingForm({ initialRoom }: Props) {
   const isMobile = useMobile();
@@ -320,153 +487,6 @@ export function BookingForm({ initialRoom }: Props) {
     </div>
   );
 
-  // ── Nav row ───────────────────────────────────────────────────────────────────
-  function NavRow({
-    canContinue,
-    onContinue,
-    onBack,
-    label = 'Continue',
-    isSubmit = false,
-  }: {
-    canContinue: boolean;
-    onContinue:  () => void;
-    onBack?:     () => void;
-    label?:      string;
-    isSubmit?:   boolean;
-  }) {
-    const continueBtn = (
-      <button
-        type="button"
-        onClick={onContinue}
-        disabled={!canContinue || (isSubmit && submitting)}
-        className="btn-wipe"
-        style={{
-          width:         isMobile ? '100%' : 'auto',
-          padding:       isMobile ? '1.125rem 2rem' : '1rem 2.5rem',
-          border:        `1px solid ${canContinue ? C.terracotta : C.hairline}`,
-          background:    'transparent',
-          cursor:        canContinue ? (isSubmit && submitting ? 'wait' : 'pointer') : 'not-allowed',
-          fontFamily:    'var(--font-mono)',
-          fontSize:      'var(--text-button)',
-          letterSpacing: '0.15em',
-          textTransform: 'uppercase',
-          color:         canContinue ? C.terracotta : C.muted,
-          opacity:       canContinue ? (isSubmit && submitting ? 0.6 : 1) : 0.45,
-          transition:    'color 0.42s cubic-bezier(0.22,1,0.36,1)',
-        }}
-      >
-        {isSubmit && submitting ? 'Sending ···' : label}
-      </button>
-    );
-
-    if (isMobile) {
-      return (
-        <div style={{ marginTop: 'clamp(2rem,5vw,3rem)', paddingTop: '1.5rem', borderTop: `1px solid ${C.hairline}` }}>
-          {onBack && (
-            <button type="button" onClick={onBack}
-              style={{ display: 'block', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-mono)', fontSize: 'var(--text-label)', letterSpacing: '0.12em', textTransform: 'uppercase', color: C.muted, marginBottom: '1rem', padding: 0 }}>
-              ← Back
-            </button>
-          )}
-          {continueBtn}
-        </div>
-      );
-    }
-
-    return (
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: onBack ? 'space-between' : 'flex-end' }}>
-        {onBack && (
-          <button type="button" onClick={onBack}
-            style={{ background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-mono)', fontSize: 'var(--text-label)', letterSpacing: '0.12em', textTransform: 'uppercase', color: C.muted, textDecoration: 'underline', textDecorationColor: C.hairline }}>
-            ← Back
-          </button>
-        )}
-        {continueBtn}
-      </div>
-    );
-  }
-
-  // ── Room card ─────────────────────────────────────────────────────────────────
-  function RoomCard({ room }: { room: Room }) {
-    const selected    = data.roomSlug === room.slug;
-    const roomAvail   = avail[room.slug];
-    const unavailable = roomAvail === false;
-    const loading     = roomAvail === null;
-    const availColor  = loading ? C.muted : unavailable ? '#B85E40' : '#3D6B3D';
-    const availLabel  = loading ? '···' : unavailable ? 'Unavailable' : 'Available';
-
-    return (
-      <button
-        type="button"
-        onClick={() => !unavailable && setRoomSlug(room.slug)}
-        disabled={unavailable}
-        style={{
-          display:       'flex',
-          flexDirection: isMobile ? 'column' : 'row',
-          alignItems:    'stretch',
-          border:        `1px solid ${selected ? C.terracotta : C.hairline}`,
-          background:    selected ? 'rgba(196,112,79,0.04)' : C.canvas,
-          cursor:        unavailable ? 'not-allowed' : 'pointer',
-          opacity:       unavailable ? 0.4 : 1,
-          textAlign:     'left',
-          padding:       0,
-          transition:    'border-color 0.2s ease, background 0.2s ease',
-          overflow:      'hidden',
-          position:      'relative',
-        }}
-      >
-        {selected && (
-          <div style={
-            isMobile
-              ? { position: 'absolute', left: 0, right: 0, top: 0, height: 3, background: C.terracotta }
-              : { position: 'absolute', left: 0, top: 0, bottom: 0, width: 3, background: C.terracotta }
-          } />
-        )}
-
-        {isMobile ? (
-          <div style={{ width: '100%', aspectRatio: '3/2', position: 'relative', overflow: 'hidden' }}>
-            <Image src={room.imageSrc} alt={room.name} fill sizes="100vw" style={{ objectFit: 'cover' }} />
-            <div style={{ position: 'absolute', top: 12, right: 12, padding: '0.25rem 0.625rem', background: unavailable ? 'rgba(28,43,26,0.75)' : 'rgba(28,43,26,0.7)', fontFamily: 'var(--font-mono)', fontSize: '0.6rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: loading ? 'rgba(245,240,232,0.6)' : unavailable ? '#E8967A' : '#A8CCA8' }}>
-              {availLabel}
-            </div>
-          </div>
-        ) : (
-          <div style={{ width: 120, minHeight: 96, flexShrink: 0, position: 'relative' }}>
-            <Image src={room.imageSrc} alt={room.name} fill sizes="120px" style={{ objectFit: 'cover' }} />
-          </div>
-        )}
-
-        <div style={{ flex: 1, padding: isMobile ? '1rem 1.125rem 1.125rem' : '0.875rem 1.125rem', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: '0.3rem' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '0.75rem' }}>
-            <p style={{ fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'var(--text-body-lg)', color: C.ink, lineHeight: 1.2 }}>
-              {room.name}
-            </p>
-            <p style={{ fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'var(--text-body-lg)', color: selected ? C.terracotta : C.ink, whiteSpace: 'nowrap', lineHeight: 1.2, flexShrink: 0 }}>
-              ${room.pricePerNight}
-              <span style={{ fontFamily: 'var(--font-body)', fontSize: '0.7em', color: C.muted }}>/night</span>
-            </p>
-          </div>
-          <p style={{ color: C.muted, fontSize: 'var(--text-body-sm)', lineHeight: 1.35 }}>{room.tagline}</p>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '0.25rem' }}>
-            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 'var(--text-label)', letterSpacing: '0.1em', textTransform: 'uppercase', color: C.muted }}>
-              Up to {room.maxGuests} guests
-            </span>
-            {!isMobile && (
-              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 'var(--text-label)', letterSpacing: '0.1em', textTransform: 'uppercase', color: availColor }}>
-                {availLabel}
-              </span>
-            )}
-            {isMobile && nights > 0 && (
-              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 'var(--text-label)', letterSpacing: '0.1em', color: selected ? C.terracotta : C.muted }}>
-                ${(room.pricePerNight * nights).toLocaleString()} est.
-              </span>
-            )}
-          </div>
-        </div>
-      </button>
-    );
-  }
-
   // ── Step bodies (content without nav row) ─────────────────────────────────────
   const step1Body = (
     <div style={{ width: '100%', minWidth: 0 }}>
@@ -490,7 +510,17 @@ export function BookingForm({ initialRoom }: Props) {
         </p>
       )}
       <div style={{ display: 'flex', flexDirection: 'column', gap: isMobile ? '1rem' : '0.75rem' }}>
-        {rooms.map(room => <RoomCard key={room.slug} room={room} />)}
+        {rooms.map(room => (
+          <RoomCard
+            key={room.slug}
+            room={room}
+            selectedSlug={data.roomSlug}
+            avail={avail}
+            isMobile={isMobile}
+            nights={nights}
+            onSelect={setRoomSlug}
+          />
+        ))}
       </div>
     </div>
   );
@@ -710,25 +740,25 @@ export function BookingForm({ initialRoom }: Props) {
         {step === 1 && (
           <div>
             {step1Body}
-            <NavRow canContinue={step1Valid} onContinue={() => setStep(2)} />
+            <NavRow canContinue={step1Valid} onContinue={() => setStep(2)} isMobile={isMobile} submitting={submitting} />
           </div>
         )}
         {step === 2 && (
           <div>
             {step2Body}
-            <NavRow canContinue={step2Valid} onContinue={() => setStep(3)} onBack={() => setStep(1)} />
+            <NavRow canContinue={step2Valid} onContinue={() => setStep(3)} onBack={() => setStep(1)} isMobile={isMobile} submitting={submitting} />
           </div>
         )}
         {step === 3 && (
           <div>
             {step3Body}
-            <NavRow canContinue={step3Valid} onContinue={() => setStep(4)} onBack={() => setStep(2)} />
+            <NavRow canContinue={step3Valid} onContinue={() => setStep(4)} onBack={() => setStep(2)} isMobile={isMobile} submitting={submitting} />
           </div>
         )}
         {step === 4 && (
           <div>
             {step4Body}
-            <NavRow canContinue={true} onContinue={handleSubmit} onBack={() => setStep(3)} label="Submit Enquiry" isSubmit />
+            <NavRow canContinue={true} onContinue={handleSubmit} onBack={() => setStep(3)} label="Submit Enquiry" isSubmit isMobile={isMobile} submitting={submitting} />
           </div>
         )}
       </div>
@@ -759,6 +789,8 @@ export function BookingForm({ initialRoom }: Props) {
             onBack={step > 1 ? () => setStep(step - 1) : undefined}
             label={step === 4 ? 'Submit Enquiry' : 'Continue'}
             isSubmit={step === 4}
+            isMobile={isMobile}
+            submitting={submitting}
           />
         </div>
       </div>
