@@ -5,6 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { gsap, ScrollTrigger } from '@/lib/gsap';
 import { onPreloaderDone } from '@/lib/preloader';
+import { BLUR_PLACEHOLDERS } from '@/lib/blur-placeholders';
 
 export function HeroFullscreen() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -98,6 +99,8 @@ export function HeroFullscreen() {
           fill
           priority
           sizes="100vw"
+          placeholder="blur"
+          blurDataURL={BLUR_PLACEHOLDERS.hero}
           className="object-cover"
           style={{ objectPosition: 'center 30%' }}
           onError={(e) => {
@@ -201,7 +204,7 @@ export function HeroFullscreen() {
             fontSize: 9,
             letterSpacing: '0.2em',
             textTransform: 'uppercase',
-            color: 'rgba(245,240,232,0.3)',
+            color: 'rgba(245,240,232,0.55)',
           }}
         >
           scroll
