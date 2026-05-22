@@ -30,10 +30,10 @@ export function Preloader() {
     tl.fromTo(
       fill,
       { attr: { y: 200, height: 0 } },
-      { attr: { y: 0, height: 200 }, duration: 0.8, ease: 'power2.out' }
+      { attr: { y: 0, height: 200 }, duration: 0.45, ease: 'power2.out' }
     )
-      .to(mountain, { opacity: 0, y: -12, duration: 0.2, ease: 'power2.in' }, '+=0.1')
-      .to(overlay, { yPercent: -100, duration: 0.5, ease: 'power3.inOut' }, '-=0.1');
+      .to(mountain, { opacity: 0, y: -10, duration: 0.12, ease: 'power2.in' }, '-=0.05')
+      .to(overlay, { yPercent: -100, duration: 0.35, ease: 'power3.inOut' }, '-=0.05');
 
     return () => { tl.kill(); };
   }, []);

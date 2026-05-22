@@ -4,6 +4,7 @@ import { useEffect, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { gsap } from '@/lib/gsap';
+import { BLUR_PLACEHOLDERS } from '@/lib/blur-placeholders';
 
 interface RoomCardProps {
   slug: string;
@@ -26,6 +27,7 @@ export function RoomCard({
   pricePerNight,
   priority = false,
 }: RoomCardProps) {
+  const blurDataURL = BLUR_PLACEHOLDERS[slug as keyof typeof BLUR_PLACEHOLDERS];
   const imageWrapRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -66,6 +68,8 @@ export function RoomCard({
           fill
           sizes="(max-width: 768px) 100vw, 50vw"
           priority={priority}
+          placeholder={blurDataURL ? 'blur' : 'empty'}
+          blurDataURL={blurDataURL}
           className="object-cover"
           style={{ willChange: 'transform' }}
         />
