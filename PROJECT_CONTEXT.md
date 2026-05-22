@@ -1,6 +1,6 @@
 # Mountain Nest Hotel — Build Context
 
-Generated: 2026-05-16 | Last updated: 2026-05-19 (Sprint 11 — Admin API round-trip)
+Generated: 2026-05-16 | Last updated: 2026-05-22 (Sprint 12 — Performance & accessibility)
 
 ---
 
@@ -238,6 +238,8 @@ sessions          — managed by BetterAuth
   - Sprint 10.2: Core Web Vitals + a11y + visual QA ✅
 ### Phase 11: Admin API Round-Trip ✅
   - Sprint 11: Rooms/SEO/content DB→guest wiring + seed mechanism ✅
+### Phase 12: Performance & Accessibility ⏳
+  - Sprint 12: Performance audit + accessibility fixes (preloader, blur placeholders, image compression, contrast) ⏳ — PR #4 open
 
 ---
 
@@ -247,6 +249,8 @@ sessions          — managed by BetterAuth
 - **2026-05-16** — Payment: No Stripe for now. Booking model is inquiry-to-confirm. Admin confirms manually, sends payment details separately.
 - **2026-05-16** — Database: Self-hosted PostgreSQL on user's VPS. DB_URL provided via .env. Drizzle handles migrations.
 - **2026-05-22** — Deployed to Vercel. Auto-deploys from `main`. All env vars set in Vercel dashboard. `BETTER_AUTH_URL` and `NEXT_PUBLIC_APP_URL` set to Vercel domain.
+- **2026-05-22** — Sprint 12: Preloader timing cut 1.6s→0.75s to reduce LCP blocking. Blur placeholders generated (8×5px base64 webp) for hero + 6 rooms. 7 room gallery images recompressed 159–812KB→87–401KB. Footer contrast 96→100: all 9px mono labels bumped to 11px + opacity 0.20–0.35→0.58–0.65; footer CTA button flipped to ivory bg + ink text (11.5:1 ratio); colHeadStyle uses hardcoded `#D58060` (lighter terracotta for WCAG on dark bg) — known deviation from token system.
+- **2026-05-22** — Lighthouse production run blocked by Vercel deployment protection (audit ran against Vercel login page). Actual LCP on production unknown — dev server showed 4.3s (noise-heavy). Real measurement pending after merge + protection disable.
 - **2026-05-22** — Lenis config switched from `duration: 1.2` + custom easing to `lerp: 0.08`. The duration approach felt inconsistent in production (slower cold-start JS parse). `lerp` gives frame-rate-independent smoothness regardless of device speed.
 - **2026-05-22** — Database migrated to Neon serverless PostgreSQL. `src/db/index.ts` now uses `@neondatabase/serverless` `neon()` + `drizzle-orm/neon-http` instead of `pg` Pool. No schema changes — just the driver swap. Drizzle migrations still run against `DATABASE_URL` via drizzle-kit.
 - **2026-05-16** — Fonts revised: Cormorant (display) + Jost (body) + DM Mono (labels). Replaced Fraunces (too quirky/wonky) and Plus Jakarta Sans (too startup-adjacent). Cormorant is old-style serif with artisanal, old-world warmth — italics available, weights 300–600. Jost is geometric humanist, clean and premium.
@@ -379,6 +383,7 @@ sessions          — managed by BetterAuth
 - `src/app/api/rooms/route.ts` — public GET: active rooms from DB merged via `mergeRoom()`, static ROOMS fallback if DB empty/offline
 - `src/app/api/admin/seed/route.ts` — admin-only POST: inserts 6 default rooms from static ROOMS data; `onConflictDoNothing()` on slug
 - `src/components/admin/SeedRoomsButton.tsx` — client: calls POST /api/admin/seed, shown in admin rooms page when table is empty
+- `src/lib/blur-placeholders.ts` — base64 webp blur placeholders (8×5px) for hero + 6 room slugs; used in HeroFullscreen, RoomCard, RoomDetailClient
 
 ---
 
@@ -390,5 +395,5 @@ _(none yet)_
 
 ## Next Session
 
-**Start at:** Sprint 12 — Performance audit & optimization
-**Context:** Site is live on Vercel. DB is on Neon (serverless PostgreSQL). Admin is seeded and functional. All guest pages read from DB with static fallbacks. Next focus is production performance — LCP, CLS, INP, bundle size, image optimization, and font loading. Run Lighthouse on the deployed Vercel URL first to establish a baseline before making changes.
+**Start at:** Sprint 12 wrap-up — merge PR #4, run Lighthouse on live Vercel URL
+**Context:** Sprint 12 PR is open (#4). Changes: preloader cut from 1.6s → 0.75s (LCP fix), blur placeholders for hero + 6 room images, 7 room images recompressed (87–401KB), footer accessibility fixed 96→100 (all contrast failures resolved). Lighthouse baseline was run on dev server (not production — Vercel deployment protection blocked). After merging, disable deployment protection temporarily and run Lighthouse against the live Vercel URL to get real production CWV numbers. Known remaining item: `colHeadStyle` in Footer uses hardcoded `#D58060` instead of a CSS token (accessibility-driven contrast fix — either update the token or add `--color-accent-footer` to globals.css).
