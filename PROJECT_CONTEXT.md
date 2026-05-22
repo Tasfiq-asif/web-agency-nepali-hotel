@@ -246,6 +246,8 @@ sessions          — managed by BetterAuth
 - **2026-05-16** — Auth: BetterAuth chosen over NextAuth. Pairs natively with Drizzle, simpler session management for single-admin use case.
 - **2026-05-16** — Payment: No Stripe for now. Booking model is inquiry-to-confirm. Admin confirms manually, sends payment details separately.
 - **2026-05-16** — Database: Self-hosted PostgreSQL on user's VPS. DB_URL provided via .env. Drizzle handles migrations.
+- **2026-05-22** — Deployed to Vercel. Auto-deploys from `main`. All env vars set in Vercel dashboard. `BETTER_AUTH_URL` and `NEXT_PUBLIC_APP_URL` set to Vercel domain.
+- **2026-05-22** — Lenis config switched from `duration: 1.2` + custom easing to `lerp: 0.08`. The duration approach felt inconsistent in production (slower cold-start JS parse). `lerp` gives frame-rate-independent smoothness regardless of device speed.
 - **2026-05-22** — Database migrated to Neon serverless PostgreSQL. `src/db/index.ts` now uses `@neondatabase/serverless` `neon()` + `drizzle-orm/neon-http` instead of `pg` Pool. No schema changes — just the driver swap. Drizzle migrations still run against `DATABASE_URL` via drizzle-kit.
 - **2026-05-16** — Fonts revised: Cormorant (display) + Jost (body) + DM Mono (labels). Replaced Fraunces (too quirky/wonky) and Plus Jakarta Sans (too startup-adjacent). Cormorant is old-style serif with artisanal, old-world warmth — italics available, weights 300–600. Jost is geometric humanist, clean and premium.
 - **2026-05-16** — Font replaced again: Gloock → Cormorant. Gloock is single-weight with no italic support. Cormorant offers weights 300–600, normal + italic, same old-world warmth with far more flexibility.
@@ -388,5 +390,5 @@ _(none yet)_
 
 ## Next Session
 
-**Start at:** Production-ready ✅ — deploy when DB is live
-**Context:** Sprint 11 wired the full admin→DB→guest loop. Rooms, SEO, and gallery all read from DB with static fallbacks. Admin can now seed rooms, edit them, and see changes on the guest site. All page metadata reads from `pages_seo` table with hardcoded fallbacks. BookingForm fetches live room list from `/api/rooms` on mount.
+**Start at:** Sprint 12 — Performance audit & optimization
+**Context:** Site is live on Vercel. DB is on Neon (serverless PostgreSQL). Admin is seeded and functional. All guest pages read from DB with static fallbacks. Next focus is production performance — LCP, CLS, INP, bundle size, image optimization, and font loading. Run Lighthouse on the deployed Vercel URL first to establish a baseline before making changes.
