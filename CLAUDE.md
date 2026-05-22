@@ -20,11 +20,11 @@ Boutique mountain hotel website for Mountain Nest Hotel (Nepal). Template to sho
 | Animation | GSAP + Lenis (see `src/lib/gsap.ts`, `src/lib/lenis.ts`) |
 | Auth | BetterAuth (`src/lib/auth.ts`) — admin only |
 | ORM | Drizzle ORM (`src/db/schema.ts`, `src/db/index.ts`) |
-| Database | PostgreSQL — self-hosted VPS, connection via `DATABASE_URL` env var |
-| Email | Resend — installed but not wired yet (add when real client + domain) |
+| Database | PostgreSQL — **Neon serverless** (`@neondatabase/serverless` + `drizzle-orm/neon-http`) |
+| Email | Resend — installed, wire up when real client provides a domain |
 | Images | Uploadthing — for admin gallery uploads |
-| Fonts | Fraunces (display) + Plus Jakarta Sans (body) + DM Mono (mono) |
-| Deploy | Docker — `Dockerfile` + `docker-compose.yml` (Postgres + Next.js) |
+| Fonts | Cormorant (display) + Jost (body) + DM Mono (mono) |
+| Deploy | **Vercel** — auto-deploys from `main` branch |
 
 ## Design Tokens
 
@@ -40,7 +40,8 @@ Section rhythm: Ivory → Dark forest → Ivory → Dark forest → Terracotta C
 - **Resend** — installed, do not remove. Wire it up when a real client provides a domain.
 - **Starlyn patterns** — when building new components, check Starlyn first at `/Users/tasfiqsunny/Documents/code/WebDev/2026/agency-starlyn/starlyn-agency/src/`. Adapt rather than rewrite.
 - **Tailwind v4** — no `tailwind.config.ts`. All tokens are in `globals.css` `@theme` block.
-- **BetterAuth migrations** — BetterAuth manages its own auth tables. Run `npx @better-auth/cli migrate` separately from Drizzle migrations.
+- **BetterAuth migrations** — auth tables (`user`, `session`, `account`, `verification`) are in `src/db/auth-schema.ts` and included in `drizzle.config.ts`. Run `npx drizzle-kit generate && npx drizzle-kit migrate` to apply. Do NOT use `@better-auth/cli migrate` — it does not work with Drizzle.
+- **Neon DB** — `drizzle.config.ts` loads `.env.local` via `@next/env`. Always run migrations with `npx drizzle-kit migrate` (no prefix needed).
 - **No comments** unless the WHY is genuinely non-obvious.
 
 ## Running Locally
@@ -59,10 +60,20 @@ npx drizzle-kit migrate    # apply migrations to DB
 
 Requires `DATABASE_URL` in `.env.local`. See `.env.example` for format.
 
-## Docker (VPS deploy)
+## Deploy (Vercel)
 
-```bash
-docker compose up -d --build          # build and start all services
-docker compose exec app npx drizzle-kit migrate   # run migrations (first deploy only)
-docker compose logs -f app            # tail logs
-```
+- Auto-deploys on every push to `main`
+- Env vars set in Vercel dashboard: `DATABASE_URL`, `BETTER_AUTH_SECRET`, `BETTER_AUTH_URL`, `NEXT_PUBLIC_APP_URL`, `RESEND_API_KEY`, `RESEND_FROM_EMAIL`, `ADMIN_EMAIL`, `UPLOADTHING_SECRET`, `UPLOADTHING_APP_ID`
+- `BETTER_AUTH_URL` and `NEXT_PUBLIC_APP_URL` must match the live Vercel domain
+
+## Next Session — Performance Sprint
+
+Goals for next session:
+- Audit and improve Core Web Vitals (LCP, CLS, INP) on Vercel deployment
+- Optimize hero image loading (priority, sizing, format)
+- Lazy-load below-the-fold images and sections
+- Review bundle size — check for unused dependencies
+- Add `next/image` blur placeholders for room images
+- Audit GSAP animations for layout thrash (use `will-change` sparingly)
+- Check font loading strategy (preload, display swap)
+- Run Lighthouse on the deployed URL and fix top issues
