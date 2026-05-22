@@ -5,6 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { gsap } from '@/lib/gsap';
 import type { Room } from '@/data/rooms';
+import { BLUR_PLACEHOLDERS } from '@/lib/blur-placeholders';
 
 interface Props {
   room: Room;
@@ -14,6 +15,7 @@ export function RoomDetailClient({ room }: Props) {
   const contentRef = useRef<HTMLElement>(null);
   const heroImgRef = useRef<HTMLDivElement>(null);
   const [activeImg, setActiveImg] = useState(room.imageSrc);
+  const blurDataURL = BLUR_PLACEHOLDERS[room.slug as keyof typeof BLUR_PLACEHOLDERS];
 
   const switchImage = useCallback((src: string) => {
     if (src === activeImg) return;
@@ -68,6 +70,8 @@ export function RoomDetailClient({ room }: Props) {
             fill
             priority
             sizes="100vw"
+            placeholder={blurDataURL ? 'blur' : 'empty'}
+            blurDataURL={blurDataURL}
             className="object-cover"
           />
         </div>

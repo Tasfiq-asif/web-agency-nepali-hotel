@@ -56,10 +56,10 @@ export function Footer() {
             <p
               style={{
                 fontFamily:    'var(--font-mono)',
-                fontSize:      10,
+                fontSize:      11,
                 letterSpacing: '0.15em',
                 textTransform: 'uppercase',
-                color:         'rgba(245,240,232,0.35)',
+                color:         'rgba(245,240,232,0.6)',
                 lineHeight:    1.6,
                 maxWidth:      220,
               }}
@@ -79,9 +79,9 @@ export function Footer() {
                 marginTop:      '2rem',
                 padding:        '11px 20px',
                 border:         '1px solid rgba(196,112,79,0.4)',
-                color:          'var(--color-accent)',
+                color:          'var(--color-text-inverse)',
                 fontFamily:     'var(--font-mono)',
-                fontSize:       10,
+                fontSize:       11,
                 letterSpacing:  '0.12em',
                 textTransform:  'uppercase',
                 textDecoration: 'none',
@@ -127,12 +127,12 @@ export function Footer() {
                   style={{
                     fontFamily:     'var(--font-body)',
                     fontSize:       'var(--text-body-sm)',
-                    color:          'rgba(245,240,232,0.5)',
+                    color:          'rgba(245,240,232,0.65)',
                     textDecoration: 'none',
                     transition:     'color 0.25s ease',
                   }}
                   onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.color = 'var(--color-text-inverse)'; }}
-                  onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.color = 'rgba(245,240,232,0.5)'; }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.color = 'rgba(245,240,232,0.65)'; }}
                 >
                   {label}
                 </a>
@@ -147,7 +147,7 @@ export function Footer() {
               <p style={{
                 fontFamily: 'var(--font-body)',
                 fontSize:   'var(--text-body-sm)',
-                color:      'rgba(245,240,232,0.4)',
+                color:      'rgba(245,240,232,0.65)',
                 lineHeight: 1.7,
                 marginBottom: '1.5rem',
               }}>
@@ -160,10 +160,10 @@ export function Footer() {
                   alignItems:     'center',
                   gap:            12,
                   padding:        '13px 24px',
-                  background:     'var(--color-accent)',
-                  color:          'var(--color-text-inverse)',
+                  background:     'var(--color-text-inverse)',
+                  color:          'var(--color-ink)',
                   fontFamily:     'var(--font-mono)',
-                  fontSize:       10,
+                  fontSize:       11,
                   letterSpacing:  '0.12em',
                   textTransform:  'uppercase',
                   textDecoration: 'none',
@@ -200,10 +200,10 @@ export function Footer() {
         >
           <p style={{
             fontFamily:    'var(--font-mono)',
-            fontSize:      9,
+            fontSize:      11,
             letterSpacing: '0.16em',
             textTransform: 'uppercase',
-            color:         'rgba(245,240,232,0.2)',
+            color:         'rgba(245,240,232,0.58)',
           }}>
             © {new Date().getFullYear()} Mountain Nest Hotel · NTB Reg. No. XXXXXXX · All rights reserved
           </p>
@@ -215,15 +215,15 @@ export function Footer() {
                 href="#"
                 style={{
                   fontFamily:     'var(--font-mono)',
-                  fontSize:       9,
+                  fontSize:       11,
                   letterSpacing:  '0.12em',
                   textTransform:  'uppercase',
-                  color:          'rgba(245,240,232,0.2)',
+                  color:          'rgba(245,240,232,0.58)',
                   textDecoration: 'none',
                   transition:     'color 0.25s ease',
                 }}
-                onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.color = 'rgba(245,240,232,0.5)'; }}
-                onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.color = 'rgba(245,240,232,0.2)'; }}
+                onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.color = 'rgba(245,240,232,0.9)'; }}
+                onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.color = 'rgba(245,240,232,0.58)'; }}
               >
                 {label}
               </a>
@@ -240,10 +240,10 @@ export function Footer() {
 
 const colHeadStyle: React.CSSProperties = {
   fontFamily:    'var(--font-mono)',
-  fontSize:      9,
+  fontSize:      11,
   letterSpacing: '0.2em',
   textTransform: 'uppercase',
-  color:         'var(--color-accent)',
+  color:         '#D58060',
   marginBottom:  '1.25rem',
 };
 
@@ -260,10 +260,10 @@ function FooterContact({
     <>
       <span style={{
         fontFamily:    'var(--font-mono)',
-        fontSize:      9,
+        fontSize:      11,
         letterSpacing: '0.14em',
         textTransform: 'uppercase',
-        color:         'rgba(245,240,232,0.25)',
+        color:         'rgba(245,240,232,0.6)',
         display:       'block',
         marginBottom:  3,
       }}>
