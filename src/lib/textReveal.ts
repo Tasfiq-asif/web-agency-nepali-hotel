@@ -1,7 +1,6 @@
 'use client';
 
 import { gsap } from './gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 export type SplitType = 'chars' | 'words' | 'lines';
 

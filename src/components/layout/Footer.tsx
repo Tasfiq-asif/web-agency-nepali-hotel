@@ -1,5 +1,7 @@
 'use client';
 
+import Link from 'next/link';
+
 const QUICK_LINKS = [
   { label: 'Rooms & Suites', href: '/rooms' },
   { label: 'Dining',         href: '/dining' },
@@ -37,7 +39,7 @@ export function Footer() {
 
           {/* Column 1 — Brand */}
           <div style={{ gridColumn: 'span 1' }}>
-            <a
+            <Link
               href="/"
               style={{
                 display:        'block',
@@ -52,7 +54,7 @@ export function Footer() {
               }}
             >
               Mountain Nest Hotel
-            </a>
+            </Link>
             <p
               style={{
                 fontFamily:    'var(--font-mono)',
@@ -243,7 +245,7 @@ const colHeadStyle: React.CSSProperties = {
   fontSize:      11,
   letterSpacing: '0.2em',
   textTransform: 'uppercase',
-  color:         '#D58060',
+  color:         'var(--color-accent-on-dark)',
   marginBottom:  '1.25rem',
 };
 
