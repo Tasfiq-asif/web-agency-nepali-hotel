@@ -406,7 +406,38 @@ _(none yet)_
 **Start at:** Sprint 13b — Lighthouse on production
 **Context:** Sprint 13 cleared the codebase: `npm run lint` reports 0 errors / 0 warnings (was 7 errors / 12 warnings), `npx tsc --noEmit` clean, `npm run build` green. All 5 remaining raw `<img>` now go through `next/image` (verified serving via `/_next/image`, crops and the FeatureSplit 120% parallax height unchanged). Booking flow re-verified in browser through steps 1–3 with 0 console errors after the render-phase fixes.
 
+### Production Lighthouse baseline — 2026-09-04
+Run against https://web-agency-nepali-hotel.vercel.app (public, no protection) on the
+pre-Sprint-13 build. Mobile, default throttling.
+
+| Category | Score |
+|---|---|
+| Performance | **72** |
+| Accessibility | 100 |
+| Best Practices | 100 |
+| SEO | 100 |
+
+FCP 2.0s · **LCP 5.5s** · TBT 20ms · CLS 0 · SI 6.7s
+
+Two separate causes, both actionable:
+1. **LCP render delay = 4.35s of the 5.5s (80%).** The LCP element is the hero
+   paragraph (`.hero-fade`), not an image. It is `opacity: 0` until hydration →
+   preloader timeline (~0.75s) → `.hero-fade` tween (0.5s delay + 0.9s duration).
+   The text is gated behind JS, so LCP cannot go green while the entrance
+   animation owns it. Fixing this means changing the luxury reveal — an
+   Aesthetic Identity decision, not a performance decision.
+2. **566 KiB offscreen + 396 KiB oversized images.** Every flagged file is served
+   raw from `/images/...` — i.e. exactly the GalleryMasonry and FeatureSplit
+   `<img>` tags that Sprint 13 converted to `next/image`. Re-measure after PR #6
+   merges before doing anything further here.
+
 Remaining to call this site finished:
-1. Lighthouse against the live Vercel URL — still blocked by deployment protection. Disable it temporarily, run the audit, record real LCP/CLS/INP here.
+1. Merge PR #6, let Vercel redeploy, re-run Lighthouse to isolate what the image
+   fix actually bought. Then decide on the hero reveal (item 1 above).
 2. Resend is wired but inert — needs a real sending domain before booking emails work.
-3. Placeholder content still in the footer/contact: `wa.me/97798XXXXXXXX`, `+977-98XXXXXXXX`, `NTB Reg. No. XXXXXXX`, and `#` hrefs on Instagram/Facebook/TripAdvisor and Privacy/Terms. Fine for a demo, must be real before any client handover.
+3. **`NEXT_PUBLIC_APP_URL` is wrong in Vercel production** — it resolves to
+   `http://localhost:3001`, so the deployed `robots.txt` and `sitemap.xml` publish
+   localhost URLs (`Host: http://localhost:3001`, every `<loc>` a localhost link).
+   This silently undoes Sprint 10.1. Fix the env var to the live origin and
+   redeploy. `BETTER_AUTH_URL` was set at the same time and should be checked too.
+4. Placeholder content still in the footer/contact: `wa.me/97798XXXXXXXX`, `+977-98XXXXXXXX`, `NTB Reg. No. XXXXXXX`, and `#` hrefs on Instagram/Facebook/TripAdvisor and Privacy/Terms. Fine for a demo, must be real before any client handover.
