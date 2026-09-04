@@ -314,17 +314,23 @@ function MobileMenu({
                   exit={{ opacity: 0, x: -16 }}
                   transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1], delay: 0.15 + i * 0.07 }}
                   style={{
-                    display:        'flex',
-                    alignItems:     'baseline',
-                    gap:            16,
+                    display:        'block',
                     textDecoration: 'none',
-                    paddingBlock:   'clamp(10px, 2.5vh, 18px)',
                     borderBottom:   '1px solid rgba(245,240,232,0.06)',
-                    opacity:        isDimmed ? 0.2 : 1,
-                    transform:      isDimmed ? 'translateX(-4px)' : 'translateX(0)',
-                    transition:     'opacity 0.3s ease, transform 0.3s ease',
                   }}
                 >
+                  {/* The dim state lives on this inner span, not the anchor: Framer owns
+                      opacity and transform on the anchor, and a CSS transition on the same
+                      two properties would re-ease every frame it writes. */}
+                  <span style={{
+                    display:      'flex',
+                    alignItems:   'baseline',
+                    gap:          16,
+                    paddingBlock: 'clamp(10px, 2.5vh, 18px)',
+                    opacity:      isDimmed ? 0.2 : 1,
+                    transform:    isDimmed ? 'translateX(-4px)' : 'translateX(0)',
+                    transition:   'opacity 0.3s ease, transform 0.3s ease',
+                  }}>
                   <span style={{
                     fontFamily:    'var(--font-mono)',
                     fontSize:      10,
@@ -364,6 +370,7 @@ function MobileMenu({
                   >
                     →
                   </motion.span>
+                  </span>
                 </motion.a>
               );
             })}
