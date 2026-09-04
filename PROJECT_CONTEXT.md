@@ -241,9 +241,11 @@ sessions          — managed by BetterAuth
 ### Phase 12: Performance & Accessibility ✅
   - Sprint 12: Performance audit + accessibility fixes (preloader, blur placeholders, image compression, contrast) ✅ — PR #4 merged 2026-05-22
   - Post-sprint: booking-form remount blink fix ✅ — PR #5 merged 2026-05-22
-### Phase 13: Code Cleanup & Production Verification ⏳
-  - Sprint 13: Lint errors cleared, images through next/image, footer color tokenized ✅
-  - Sprint 13b: Lighthouse against the live Vercel URL ⏳ — blocked on deployment protection
+### Phase 13: Code Cleanup & Production Verification ✅
+  - Sprint 13: Lint errors cleared, images through next/image, footer color tokenized ✅ — PR #6 merged 2026-09-04
+  - Sprint 13b: Production Lighthouse baseline + re-measure ✅
+  - Sprint 13c: Mobile menu flicker root-caused and fixed ✅ — PR #7 merged 2026-09-04
+  - Sprint 13d: Vercel production env corrected (NEXT_PUBLIC_APP_URL, BETTER_AUTH_URL) ✅
 
 ---
 
@@ -436,13 +438,38 @@ Two separate causes, both actionable:
    `<img>` tags that Sprint 13 converted to `next/image`. Re-measure after PR #6
    merges before doing anything further here.
 
-Open PRs: **#6** (this branch — cleanup, no visual change) and **#7** (mobile menu
-flicker, branched off main, code-only). They touch `Navbar.tsx` in different places;
-whichever merges second may need a trivial rebase. #7 is confirmed fixed on device.
+Both PRs merged 2026-09-04 (#6 cleanup, #7 menu flicker — the latter confirmed fixed
+on a real device). Production redeployed for the first time in 105 days.
+
+### Production env fix — 2026-09-04
+`NEXT_PUBLIC_APP_URL` was `http://localhost:3001` in Vercel. It feeds four consumers,
+not just SEO: `next-sitemap` siteUrl, `src/lib/schema.ts` JSON-LD, **`src/lib/auth-client.ts`
+baseURL and `src/lib/auth.ts` trustedOrigins** — so live admin login had been pointing at
+localhost since May. `BETTER_AUTH_URL` was set in the same batch and was corrected with it.
+Both are now `https://web-agency-nepali-hotel.vercel.app` in Production and Preview.
+Note: removing a var's production scope in the Vercel CLI deletes the shared Production+Preview
+entry outright — re-add both scopes explicitly.
+
+Verified after redeploy: `robots.txt` reports the real Host and Sitemap, and every
+`<loc>` in the sitemap is a real URL.
+
+### Lighthouse — before vs after (production, mobile)
+| | before | after |
+|---|---|---|
+| Performance | 72 | **83** |
+| FCP | 2.0s | 1.4s |
+| LCP | 5.5s | **3.7s** |
+| CLS | 0 | 0 |
+
+Accessibility / Best Practices / SEO stayed 100. Both image audits now pass outright
+(the 566 KiB offscreen and 396 KiB oversized findings are gone) — that was the
+GalleryMasonry and FeatureSplit `next/image` conversion.
 
 Remaining to call this site finished:
-1. Merge PR #6, let Vercel redeploy, re-run Lighthouse to isolate what the image
-   fix actually bought. Then decide on the hero reveal (item 1 above).
+1. **Hero LCP — still the last big item, and it is an aesthetic decision.** LCP is 3.7s
+   and **2,625ms of it (71%) is still render delay** on the hero paragraph. The images are
+   fixed; what is left is the preloader plus the entrance animation holding the LCP text at
+   `opacity: 0`. Going green needs the reveal itself to change.
 2. Resend is wired but inert — needs a real sending domain before booking emails work.
 3. **`NEXT_PUBLIC_APP_URL` is wrong in Vercel production** — it resolves to
    `http://localhost:3001`, so the deployed `robots.txt` and `sitemap.xml` publish
