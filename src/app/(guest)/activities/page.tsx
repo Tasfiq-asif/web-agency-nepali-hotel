@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
+import Image from 'next/image';
 import { gsap } from '@/lib/gsap';
 import { CTASection } from '@/components/sections/CTASection';
 
@@ -209,14 +210,14 @@ export default function ActivitiesPage() {
                 {activity.image && (
                   <div
                     className="overflow-hidden rounded-sm"
-                    style={{ aspectRatio: '3 / 2', marginBottom: '1.5rem' }}
+                    style={{ aspectRatio: '3 / 2', marginBottom: '1.5rem', position: 'relative' }}
                   >
-                    <img
+                    <Image
                       src={activity.image}
                       alt={activity.title}
+                      fill
+                      sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
                       style={{
-                        width: '100%',
-                        height: '100%',
                         objectFit: 'cover',
                         transition:
                           'transform 0.7s cubic-bezier(0.22, 1, 0.36, 1)',

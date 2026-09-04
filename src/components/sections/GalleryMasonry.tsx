@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
+import Image from 'next/image';
 import { gsap } from '@/lib/gsap';
 
 const GALLERY_ITEMS = [
@@ -108,12 +109,12 @@ export function GalleryMasonry() {
                 cursor: 'pointer',
               }}
             >
-              <img
+              <Image
                 src={item.src}
                 alt={item.alt}
+                fill
+                sizes="(max-width: 768px) 100vw, 50vw"
                 style={{
-                  width: '100%',
-                  height: '100%',
                   objectFit: 'cover',
                   transition: 'transform 0.6s cubic-bezier(0.22, 1, 0.36, 1)',
                 }}

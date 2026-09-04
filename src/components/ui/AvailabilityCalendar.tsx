@@ -79,7 +79,9 @@ export function AvailabilityCalendar({
   const gridWrapRef = useRef<HTMLDivElement>(null);
 
   const onSelectRef = useRef(onSelect);
-  onSelectRef.current = onSelect;
+  useEffect(() => {
+    onSelectRef.current = onSelect;
+  });
 
   // ── Measure grid width → square row height ─────────────────────────────────
   // gridAutoRows is set to the exact column pixel width so cells are always

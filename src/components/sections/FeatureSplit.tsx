@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
+import Image from 'next/image';
 import { gsap } from '@/lib/gsap';
 
 export function FeatureSplit() {
@@ -63,9 +64,12 @@ export function FeatureSplit() {
             className="feature-image overflow-hidden rounded-sm"
             style={{ aspectRatio: '4 / 5' }}
           >
-            <img
+            <Image
               src="/images/dining.webp"
               alt="Mountain Nest Hotel dining experience"
+              width={800}
+              height={533}
+              sizes="(max-width: 1024px) 100vw, 50vw"
               className="w-full object-cover"
               style={{ height: '120%', willChange: 'transform' }}
             />

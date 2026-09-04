@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FlipLink } from '@/components/ui/FlipLink';
 
@@ -58,7 +59,7 @@ export function Navbar() {
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 72 }}>
 
             {/* Logo */}
-            <a
+            <Link
               href="/"
               style={{
                 fontFamily:     'var(--font-display)',
@@ -74,7 +75,7 @@ export function Navbar() {
               }}
             >
               Mountain Nest
-            </a>
+            </Link>
 
             {/* Desktop nav */}
             <nav aria-label="Main navigation" className="hidden md:flex" style={{ alignItems: 'center', gap: 36 }}>

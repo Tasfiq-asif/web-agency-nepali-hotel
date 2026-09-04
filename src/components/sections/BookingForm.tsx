@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState, useSyncExternalStore } from 'react';
 import Image from 'next/image';
 import { AvailabilityCalendar, type DateRange } from '@/components/ui/AvailabilityCalendar';
 import { ROOMS as STATIC_ROOMS, type Room } from '@/data/rooms';
@@ -72,15 +72,20 @@ const TEXT_FIELDS = [
 
 // ── Responsive hook — breakpoint matches split-panel activation ────────────────
 function useMobile(breakpoint = 1024) {
-  const [isMobile, setIsMobile] = useState(false);
-  useEffect(() => {
-    const mq = window.matchMedia(`(max-width: ${breakpoint - 1}px)`);
-    setIsMobile(mq.matches);
-    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
-    mq.addEventListener('change', handler);
-    return () => mq.removeEventListener('change', handler);
-  }, [breakpoint]);
-  return isMobile;
+  const query = `(max-width: ${breakpoint - 1}px)`;
+  const subscribe = useCallback(
+    (onChange: () => void) => {
+      const mq = window.matchMedia(query);
+      mq.addEventListener('change', onChange);
+      return () => mq.removeEventListener('change', onChange);
+    },
+    [query],
+  );
+  return useSyncExternalStore(
+    subscribe,
+    () => window.matchMedia(query).matches,
+    () => false,
+  );
 }
 
 // ── Nav row ────────────────────────────────────────────────────────────────────
@@ -260,7 +265,7 @@ export function BookingForm({ initialRoom }: Props) {
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [bookingId,   setBookingId]   = useState<string | null>(null);
   const [focused,     setFocused]     = useState<string | null>(null);
-  const [avail,       setAvail]       = useState<Record<string, boolean | null>>({});
+  const [availResult, setAvailResult] = useState<{ key: string; map: Record<string, boolean | null> }>({ key: '', map: {} });
   const [slideIndex,  setSlideIndex]  = useState(0);
   const [rooms,       setRooms]       = useState<Room[]>(STATIC_ROOMS);
 
@@ -292,13 +297,27 @@ export function BookingForm({ initialRoom }: Props) {
   }, [isMobile]);
 
   // ── Fetch all rooms' availability when entering Step 2 ────────────────────────
+  // availKey identifies one date range. Results are stored with the key they were
+  // fetched for, so a stale response can never overwrite a newer range, and rooms
+  // read as loading (null) on the first paint rather than optimistically available.
+  const availKey =
+    step === 2 && data.checkIn && data.checkOut
+      ? `${toISO(data.checkIn)}|${toISO(data.checkOut)}`
+      : '';
+
+  const avail = useMemo(
+    () =>
+      availResult.key === availKey && availKey
+        ? availResult.map
+        : Object.fromEntries(rooms.map(r => [r.slug, null])),
+    [availKey, availResult, rooms],
+  );
+
   useEffect(() => {
-    if (step !== 2 || !data.checkIn || !data.checkOut) return;
+    if (!availKey) return;
 
-    const from = toISO(data.checkIn);
-    const to   = toISO(data.checkOut);
-
-    setAvail(Object.fromEntries(rooms.map(r => [r.slug, null])));
+    const [from, to] = availKey.split('|');
+    let cancelled = false;
 
     Promise.all(
       rooms.map(async room => {
@@ -313,9 +332,12 @@ export function BookingForm({ initialRoom }: Props) {
         }
       }),
     ).then(results => {
-      setAvail(Object.fromEntries(results.map(r => [r.slug, r.ok])));
+      if (cancelled) return;
+      setAvailResult({ key: availKey, map: Object.fromEntries(results.map(r => [r.slug, r.ok])) });
     });
-  }, [step, data.checkIn, data.checkOut]);
+
+    return () => { cancelled = true; };
+  }, [availKey, rooms]);
 
   // ── Handlers ─────────────────────────────────────────────────────────────────
   const handleDateSelect = useCallback((range: DateRange) => {

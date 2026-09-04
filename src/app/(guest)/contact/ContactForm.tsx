@@ -63,7 +63,7 @@ export function ContactForm() {
           maxWidth: '32ch',
         }}
       >
-        Your message has reached us. We'll reply within 4 hours.
+        Your message has reached us. We&apos;ll reply within 4 hours.
       </p>
     );
   }
