@@ -284,6 +284,11 @@ sessions          — managed by BetterAuth
 - **2026-09-04** — `useMobile` moved to `useSyncExternalStore`. The old effect called setState synchronously on mount, which triggers a cascading render on every mount of the booking form.
 - **2026-09-04** — Terracotta on dark grounds is now `--color-accent-on-dark: #D58060`, not a literal in Footer. Same rendered color; the Sprint 12 contrast fix is now a token other dark sections can use.
 - **2026-09-04** — FeatureSplit uses `next/image` with explicit width/height rather than `fill`, because the parallax depends on the image being 120% of its container height — `fill` would pin it to 100%.
+- **2026-09-04** — Mobile menu flicker (PR #7, separate branch). Two independent causes, both confirmed on device:
+  1. **The header cross-faded against its own contents.** Opening the menu after scrolling faded the header background ivory→transparent (0.5s) while its logo and burger faded ink→ivory. Opposing ramps between the same two colours must intersect; measured per frame at 390px, the burger matched its background exactly at t=93ms (contrast 0) and the logo at t=172ms (contrast 1). At scroll top nothing cross-fades and the minimum was 217, which is why it only happened after scrolling. Fixed structurally: the panel (z-index 40→60) now covers the header instead of the header dissolving out from over it, the X close lives on the panel where it is ivory from frame one, and `onDark` lost its `menuOpen` coupling. Timing tweaks cannot fix this class of bug — the crossing is guaranteed by the geometry.
+  2. **The nav links were animated by two systems at once.** The `style` prop set `opacity`, `transform` and a `transition` on those same properties on a `motion.a` whose `initial`/`animate`/`exit` already animated `opacity` and `x`. The CSS transition re-eased every frame Framer wrote: link 1 is specified to land at 700ms and was landing at 906ms, creeping through sub-pixel transforms for ~200ms past its end, which re-rasterises 50-80px Cormorant glyphs every frame. The dim state moved to an inner span so each property has one owner; links now land at 496/563/630/696ms.
+
+  **Rule for this codebase:** never put `opacity`/`transform`, or a CSS `transition` on them, in the `style` prop of a `motion` component that animates those properties — and never drive a foreground and its background from one boolean in opposite directions.
 
 ## Files Created
 
@@ -430,6 +435,10 @@ Two separate causes, both actionable:
    raw from `/images/...` — i.e. exactly the GalleryMasonry and FeatureSplit
    `<img>` tags that Sprint 13 converted to `next/image`. Re-measure after PR #6
    merges before doing anything further here.
+
+Open PRs: **#6** (this branch — cleanup, no visual change) and **#7** (mobile menu
+flicker, branched off main, code-only). They touch `Navbar.tsx` in different places;
+whichever merges second may need a trivial rebase. #7 is confirmed fixed on device.
 
 Remaining to call this site finished:
 1. Merge PR #6, let Vercel redeploy, re-run Lighthouse to isolate what the image
