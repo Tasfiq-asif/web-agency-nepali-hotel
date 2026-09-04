@@ -3,7 +3,7 @@
 import { useEffect, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { gsap, ScrollTrigger } from '@/lib/gsap';
+import { gsap } from '@/lib/gsap';
 import { onPreloaderDone } from '@/lib/preloader';
 import { BLUR_PLACEHOLDERS } from '@/lib/blur-placeholders';
 

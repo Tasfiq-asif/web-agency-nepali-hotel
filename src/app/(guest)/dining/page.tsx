@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
+import Image from 'next/image';
 import { gsap } from '@/lib/gsap';
 import { CTASection } from '@/components/sections/CTASection';
 
@@ -192,12 +193,14 @@ export default function DiningPage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
             <div
               className="story-image overflow-hidden rounded-sm"
-              style={{ aspectRatio: '4 / 5' }}
+              style={{ aspectRatio: '4 / 5', position: 'relative' }}
             >
-              <img
+              <Image
                 src="/images/dining.webp"
                 alt="Mountain Nest Hotel kitchen — herbs and fresh produce"
-                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                fill
+                sizes="(max-width: 1024px) 100vw, 50vw"
+                style={{ objectFit: 'cover' }}
               />
             </div>
 
@@ -299,14 +302,14 @@ export default function DiningPage() {
               <div key={meal.label} className="meal-card">
                 <div
                   className="overflow-hidden rounded-sm"
-                  style={{ aspectRatio: '3 / 2', marginBottom: '1.5rem' }}
+                  style={{ aspectRatio: '3 / 2', marginBottom: '1.5rem', position: 'relative' }}
                 >
-                  <img
+                  <Image
                     src={meal.image}
                     alt={meal.title}
+                    fill
+                    sizes="(max-width: 768px) 100vw, 33vw"
                     style={{
-                      width: '100%',
-                      height: '100%',
                       objectFit: 'cover',
                       transition:
                         'transform 0.7s cubic-bezier(0.22, 1, 0.36, 1)',

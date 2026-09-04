@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
+import Link from 'next/link';
 import { gsap } from '@/lib/gsap';
 import { RoomCard } from '@/components/ui/RoomCard';
 import { type Room } from '@/data/rooms';
@@ -82,7 +83,7 @@ export function RoomCardGrid({ rooms }: Props) {
 
         {/* View all link */}
         <div style={{ textAlign: 'center', marginTop: 'clamp(3rem, 5vw, 4rem)' }}>
-          <a
+          <Link
             href="/rooms"
             className="inline-flex items-center gap-3 group"
             style={{
@@ -99,7 +100,7 @@ export function RoomCardGrid({ rooms }: Props) {
           >
             View All Rooms
             <span className="inline-block w-5 h-px bg-current transition-transform duration-300 group-hover:translate-x-1" />
-          </a>
+          </Link>
         </div>
       </div>
     </section>

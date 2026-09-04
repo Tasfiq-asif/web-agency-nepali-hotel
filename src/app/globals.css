@@ -7,6 +7,8 @@
   --color-canvas:         #F5F0E8;
   --color-ink:            #1C2B1A;
   --color-accent:         #C4704F;
+  /* Terracotta lightened for AA contrast on the dark footer/forest grounds */
+  --color-accent-on-dark: #D58060;
   --color-surface-dark:   #2D4A2A;
   --color-warm-mid:       #8B7355;
   --color-hairline:       #DDD8CE;

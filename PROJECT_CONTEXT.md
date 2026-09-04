@@ -1,6 +1,6 @@
 # Mountain Nest Hotel — Build Context
 
-Generated: 2026-05-16 | Last updated: 2026-05-22 (Sprint 12 — Performance & accessibility)
+Generated: 2026-05-16 | Last updated: 2026-09-04 (Sprint 13 — Code cleanup & production verification)
 
 ---
 
@@ -238,8 +238,12 @@ sessions          — managed by BetterAuth
   - Sprint 10.2: Core Web Vitals + a11y + visual QA ✅
 ### Phase 11: Admin API Round-Trip ✅
   - Sprint 11: Rooms/SEO/content DB→guest wiring + seed mechanism ✅
-### Phase 12: Performance & Accessibility ⏳
-  - Sprint 12: Performance audit + accessibility fixes (preloader, blur placeholders, image compression, contrast) ⏳ — PR #4 open
+### Phase 12: Performance & Accessibility ✅
+  - Sprint 12: Performance audit + accessibility fixes (preloader, blur placeholders, image compression, contrast) ✅ — PR #4 merged 2026-05-22
+  - Post-sprint: booking-form remount blink fix ✅ — PR #5 merged 2026-05-22
+### Phase 13: Code Cleanup & Production Verification ⏳
+  - Sprint 13: Lint errors cleared, images through next/image, footer color tokenized ✅
+  - Sprint 13b: Lighthouse against the live Vercel URL ⏳ — blocked on deployment protection
 
 ---
 
@@ -276,6 +280,15 @@ sessions          — managed by BetterAuth
 - **2026-05-18** — Sprint 7.4: Uploadthing FileRouter uses `req.headers` (passed from middleware param) to auth-gate via BetterAuth — not `next/headers()`. RoomEditorForm is an accordion — clicking "Edit" on a room expands an inline form; saves via PATCH /api/admin/rooms/[id]. GalleryManager uses generateUploadDropzone from @uploadthing/react; after Uploadthing upload completes, client POSTs to /api/admin/gallery to save URL+alt+category to DB. Alt/category edits save on blur. Reorder uses sortOrder swap via two concurrent PATCHes. @uploadthing/react/styles.css imported in root layout (required for UT UI).
 
 ---
+- **2026-09-04** — `avail` in BookingForm is now stored keyed by date range (`availResult.key`) and derived during render. Removes the setState-in-effect cascade, makes a stale availability response unable to overwrite a newer range, and fixes rooms briefly rendering "Available" before the fetch resolved (`loading` tested `=== null`, so `undefined` read as available).
+- **2026-09-04** — `useMobile` moved to `useSyncExternalStore`. The old effect called setState synchronously on mount, which triggers a cascading render on every mount of the booking form.
+- **2026-09-04** — Terracotta on dark grounds is now `--color-accent-on-dark: #D58060`, not a literal in Footer. Same rendered color; the Sprint 12 contrast fix is now a token other dark sections can use.
+- **2026-09-04** — FeatureSplit uses `next/image` with explicit width/height rather than `fill`, because the parallax depends on the image being 120% of its container height — `fill` would pin it to 100%.
+- **2026-09-04** — Mobile menu flicker (PR #7, separate branch). Two independent causes, both confirmed on device:
+  1. **The header cross-faded against its own contents.** Opening the menu after scrolling faded the header background ivory→transparent (0.5s) while its logo and burger faded ink→ivory. Opposing ramps between the same two colours must intersect; measured per frame at 390px, the burger matched its background exactly at t=93ms (contrast 0) and the logo at t=172ms (contrast 1). At scroll top nothing cross-fades and the minimum was 217, which is why it only happened after scrolling. Fixed structurally: the panel (z-index 40→60) now covers the header instead of the header dissolving out from over it, the X close lives on the panel where it is ivory from frame one, and `onDark` lost its `menuOpen` coupling. Timing tweaks cannot fix this class of bug — the crossing is guaranteed by the geometry.
+  2. **The nav links were animated by two systems at once.** The `style` prop set `opacity`, `transform` and a `transition` on those same properties on a `motion.a` whose `initial`/`animate`/`exit` already animated `opacity` and `x`. The CSS transition re-eased every frame Framer wrote: link 1 is specified to land at 700ms and was landing at 906ms, creeping through sub-pixel transforms for ~200ms past its end, which re-rasterises 50-80px Cormorant glyphs every frame. The dim state moved to an inner span so each property has one owner; links now land at 496/563/630/696ms.
+
+  **Rule for this codebase:** never put `opacity`/`transform`, or a CSS `transition` on them, in the `style` prop of a `motion` component that animates those properties — and never drive a foreground and its background from one boolean in opposite directions.
 
 ## Files Created
 
@@ -395,5 +408,45 @@ _(none yet)_
 
 ## Next Session
 
-**Start at:** Sprint 12 wrap-up — merge PR #4, run Lighthouse on live Vercel URL
-**Context:** Sprint 12 PR is open (#4). Changes: preloader cut from 1.6s → 0.75s (LCP fix), blur placeholders for hero + 6 room images, 7 room images recompressed (87–401KB), footer accessibility fixed 96→100 (all contrast failures resolved). Lighthouse baseline was run on dev server (not production — Vercel deployment protection blocked). After merging, disable deployment protection temporarily and run Lighthouse against the live Vercel URL to get real production CWV numbers. Known remaining item: `colHeadStyle` in Footer uses hardcoded `#D58060` instead of a CSS token (accessibility-driven contrast fix — either update the token or add `--color-accent-footer` to globals.css).
+**Start at:** Sprint 13b — Lighthouse on production
+**Context:** Sprint 13 cleared the codebase: `npm run lint` reports 0 errors / 0 warnings (was 7 errors / 12 warnings), `npx tsc --noEmit` clean, `npm run build` green. All 5 remaining raw `<img>` now go through `next/image` (verified serving via `/_next/image`, crops and the FeatureSplit 120% parallax height unchanged). Booking flow re-verified in browser through steps 1–3 with 0 console errors after the render-phase fixes.
+
+### Production Lighthouse baseline — 2026-09-04
+Run against https://web-agency-nepali-hotel.vercel.app (public, no protection) on the
+pre-Sprint-13 build. Mobile, default throttling.
+
+| Category | Score |
+|---|---|
+| Performance | **72** |
+| Accessibility | 100 |
+| Best Practices | 100 |
+| SEO | 100 |
+
+FCP 2.0s · **LCP 5.5s** · TBT 20ms · CLS 0 · SI 6.7s
+
+Two separate causes, both actionable:
+1. **LCP render delay = 4.35s of the 5.5s (80%).** The LCP element is the hero
+   paragraph (`.hero-fade`), not an image. It is `opacity: 0` until hydration →
+   preloader timeline (~0.75s) → `.hero-fade` tween (0.5s delay + 0.9s duration).
+   The text is gated behind JS, so LCP cannot go green while the entrance
+   animation owns it. Fixing this means changing the luxury reveal — an
+   Aesthetic Identity decision, not a performance decision.
+2. **566 KiB offscreen + 396 KiB oversized images.** Every flagged file is served
+   raw from `/images/...` — i.e. exactly the GalleryMasonry and FeatureSplit
+   `<img>` tags that Sprint 13 converted to `next/image`. Re-measure after PR #6
+   merges before doing anything further here.
+
+Open PRs: **#6** (this branch — cleanup, no visual change) and **#7** (mobile menu
+flicker, branched off main, code-only). They touch `Navbar.tsx` in different places;
+whichever merges second may need a trivial rebase. #7 is confirmed fixed on device.
+
+Remaining to call this site finished:
+1. Merge PR #6, let Vercel redeploy, re-run Lighthouse to isolate what the image
+   fix actually bought. Then decide on the hero reveal (item 1 above).
+2. Resend is wired but inert — needs a real sending domain before booking emails work.
+3. **`NEXT_PUBLIC_APP_URL` is wrong in Vercel production** — it resolves to
+   `http://localhost:3001`, so the deployed `robots.txt` and `sitemap.xml` publish
+   localhost URLs (`Host: http://localhost:3001`, every `<loc>` a localhost link).
+   This silently undoes Sprint 10.1. Fix the env var to the live origin and
+   redeploy. `BETTER_AUTH_URL` was set at the same time and should be checked too.
+4. Placeholder content still in the footer/contact: `wa.me/97798XXXXXXXX`, `+977-98XXXXXXXX`, `NTB Reg. No. XXXXXXX`, and `#` hrefs on Instagram/Facebook/TripAdvisor and Privacy/Terms. Fine for a demo, must be real before any client handover.
