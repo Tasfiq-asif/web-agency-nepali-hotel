@@ -31,11 +31,13 @@ export function Navbar() {
     return () => { document.body.style.overflow = ''; };
   }, [menuOpen]);
 
-  const onDark = menuOpen || !scrolled;
+  const onDark = !scrolled;
 
   return (
     <>
       <motion.header
+        // the panel covers the header while open, so its controls must leave the tab order
+        inert={menuOpen}
         initial={{ opacity: 0, y: -14 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
@@ -45,12 +47,8 @@ export function Navbar() {
           left:            0,
           right:           0,
           zIndex:          50,
-          backgroundColor: menuOpen
-            ? 'transparent'
-            : scrolled
-              ? 'var(--color-canvas)'
-              : 'transparent',
-          borderBottom: `1px solid ${!menuOpen && scrolled ? 'var(--color-hairline)' : 'transparent'}`,
+          backgroundColor: scrolled ? 'var(--color-canvas)' : 'transparent',
+          borderBottom: `1px solid ${scrolled ? 'var(--color-hairline)' : 'transparent'}`,
           transition:   'background-color 0.5s ease, border-color 0.5s ease',
         }}
       >
@@ -98,7 +96,7 @@ export function Navbar() {
             {/* Mobile right — WhatsApp + Burger */}
             <div className="flex md:hidden items-center" style={{ gap: 16 }}>
               <WhatsAppIcon onDark={onDark} href={WHATSAPP_HREF} />
-              <BurgerButton open={menuOpen} onToggle={() => setMenuOpen(v => !v)} onDark={onDark} />
+              <BurgerButton open={menuOpen} onOpen={() => setMenuOpen(true)} onDark={onDark} />
             </div>
 
           </div>
@@ -147,43 +145,75 @@ function WhatsAppIcon({ onDark, href }: { onDark: boolean; href: string }) {
   );
 }
 
-/* ── 2-line burger ─────────────────────────────────────────────── */
-function BurgerButton({ open, onToggle, onDark }: { open: boolean; onToggle: () => void; onDark: boolean }) {
+/* ── 2-line burger — opens only; the X close lives inside the menu ─ */
+// Shared geometry so the in-menu X lands on exactly the same pixels as the
+// burger it replaces, which is what makes the swap read as a morph.
+const TOGGLE_BUTTON: React.CSSProperties = {
+  background:    'none',
+  border:        'none',
+  cursor:        'pointer',
+  padding:       '17px 8px',
+  display:       'flex',
+  flexDirection: 'column',
+  gap:           8,
+  alignItems:    'flex-end',
+};
+const TOGGLE_LINE: React.CSSProperties = {
+  display:         'block',
+  height:          1,
+  borderRadius:    1,
+  transformOrigin: 'center',
+};
+
+function BurgerButton({ open, onOpen, onDark }: { open: boolean; onOpen: () => void; onDark: boolean }) {
   const lineColor = onDark ? 'var(--color-text-inverse)' : 'var(--color-ink)';
 
   return (
     <button
-      onClick={onToggle}
-      aria-label={open ? 'Close menu' : 'Open menu'}
+      onClick={onOpen}
+      aria-label="Open menu"
       aria-expanded={open}
+      style={{ ...TOGGLE_BUTTON, position: 'relative', zIndex: 60 }}
+    >
+      <span style={{ ...TOGGLE_LINE, width: 28, background: lineColor, transition: 'background 0.5s ease' }} />
+      <span style={{ ...TOGGLE_LINE, width: 18, background: lineColor, transition: 'background 0.5s ease' }} />
+    </button>
+  );
+}
+
+/* ── X close — rendered on the menu panel, ivory from the first frame ─ */
+function CloseButton({ onClose }: { onClose: () => void }) {
+  return (
+    <div
       style={{
-        position:      'relative',
-        zIndex:        60,
-        background:    'none',
-        border:        'none',
-        cursor:        'pointer',
-        padding:       '17px 8px',
-        display:       'flex',
-        flexDirection: 'column',
-        gap:           8,
-        alignItems:    'flex-end',
+        position: 'absolute',
+        top:      0,
+        left:     0,
+        right:    0,
+        height:   72,
+        display:  'flex',
+        alignItems: 'center',
       }}
     >
-      <motion.span
-        animate={open
-          ? { rotate: 45,  y: 4.5, width: 28, background: 'var(--color-text-inverse)' }
-          : { rotate: 0,   y: 0,   width: 28, background: lineColor }}
-        transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
-        style={{ display: 'block', height: 1, width: 28, borderRadius: 1, transformOrigin: 'center' }}
-      />
-      <motion.span
-        animate={open
-          ? { rotate: -45, y: -4.5, width: 28, background: 'var(--color-text-inverse)' }
-          : { rotate: 0,   y: 0,    width: 18, background: lineColor }}
-        transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
-        style={{ display: 'block', height: 1, width: 18, borderRadius: 1, transformOrigin: 'center' }}
-      />
-    </button>
+      <div className="container" style={{ display: 'flex', justifyContent: 'flex-end' }}>
+        <button onClick={onClose} aria-label="Close menu" style={TOGGLE_BUTTON}>
+          <motion.span
+            initial={{ rotate: 0, width: 28 }}
+            animate={{ rotate: 45, y: 4.5, width: 28 }}
+            exit={{ rotate: 0, y: 0, width: 28 }}
+            transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+            style={{ ...TOGGLE_LINE, background: 'var(--color-text-inverse)' }}
+          />
+          <motion.span
+            initial={{ rotate: 0, width: 18 }}
+            animate={{ rotate: -45, y: -4.5, width: 28 }}
+            exit={{ rotate: 0, y: 0, width: 18 }}
+            transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+            style={{ ...TOGGLE_LINE, background: 'var(--color-text-inverse)' }}
+          />
+        </button>
+      </div>
+    </div>
   );
 }
 
@@ -216,7 +246,7 @@ function MobileMenu({
           style={{
             position:      'fixed',
             inset:         0,
-            zIndex:        40,
+            zIndex:        60,
             background:    'var(--color-ink)',
             display:       'flex',
             flexDirection: 'column',
@@ -224,6 +254,8 @@ function MobileMenu({
             overflowY:     'auto',
           }}
         >
+          <CloseButton onClose={onClose} />
+
           {/* Decorative left vertical line — terracotta */}
           <motion.div
             initial={{ scaleY: 0 }}
