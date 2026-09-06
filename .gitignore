@@ -45,3 +45,6 @@ next-env.d.ts
 /public/sitemap-0.xml
 /public/sitemap*.xml
 /public/robots.txt
+
+# playwright mcp session artifacts (screenshots, console logs, snapshots)
+.playwright-mcp/
