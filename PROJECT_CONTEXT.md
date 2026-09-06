@@ -471,9 +471,15 @@ Remaining to call this site finished:
    fixed; what is left is the preloader plus the entrance animation holding the LCP text at
    `opacity: 0`. Going green needs the reveal itself to change.
 2. Resend is wired but inert — needs a real sending domain before booking emails work.
-3. **`NEXT_PUBLIC_APP_URL` is wrong in Vercel production** — it resolves to
-   `http://localhost:3001`, so the deployed `robots.txt` and `sitemap.xml` publish
-   localhost URLs (`Host: http://localhost:3001`, every `<loc>` a localhost link).
-   This silently undoes Sprint 10.1. Fix the env var to the live origin and
-   redeploy. `BETTER_AUTH_URL` was set at the same time and should be checked too.
-4. Placeholder content still in the footer/contact: `wa.me/97798XXXXXXXX`, `+977-98XXXXXXXX`, `NTB Reg. No. XXXXXXX`, and `#` hrefs on Instagram/Facebook/TripAdvisor and Privacy/Terms. Fine for a demo, must be real before any client handover.
+3. Placeholder content still in the footer/contact: `wa.me/97798XXXXXXXX`, `+977-98XXXXXXXX`, `NTB Reg. No. XXXXXXX`, and `#` hrefs on Instagram/Facebook/TripAdvisor and Privacy/Terms. Fine for a demo, must be real before any client handover.
+4. No automated tests of any kind — no unit, integration or e2e. Every "green" claim
+   in this file is a lint/tsc/build result plus manual browser checking. The booking
+   conflict check in `POST /api/bookings` and `mergeRoom()`'s DB/static fallback are
+   the two places where that gap costs most.
+
+_(The former item 3 — `NEXT_PUBLIC_APP_URL` pointing at localhost in Vercel — was fixed
+on 2026-09-04 and re-verified live on 2026-09-06: `robots.txt` reports
+`Host: https://web-agency-nepali-hotel.vercel.app` and the sitemap `<loc>` entries are
+real URLs. The list had kept it open, contradicting the env-fix section above.
+The localhost sitemap output from a **local** `npm run build` is expected — that reads
+the local `.env`, not Vercel's.)_
