@@ -15,12 +15,12 @@ Boutique mountain hotel website for Mountain Nest Hotel (Nepal). Template to sho
 
 | Layer | Choice |
 |---|---|
-| Framework | Next.js 15, App Router, TypeScript |
+| Framework | Next.js 16, App Router, TypeScript |
 | Styling | Tailwind CSS v4 — tokens live in `src/app/globals.css` via `@theme` |
 | Animation | GSAP + Lenis (see `src/lib/gsap.ts`, `src/lib/lenis.ts`) |
 | Auth | BetterAuth (`src/lib/auth.ts`) — admin only |
 | ORM | Drizzle ORM (`src/db/schema.ts`, `src/db/index.ts`) |
-| Database | PostgreSQL — **Neon serverless** (`@neondatabase/serverless` + `drizzle-orm/neon-http`) |
+| Database | PostgreSQL — **local Docker in dev** (host port 5437), **Neon serverless** in production |
 | Email | Resend — installed, wire up when real client provides a domain |
 | Images | Uploadthing — for admin gallery uploads |
 | Fonts | Cormorant (display) + Jost (body) + DM Mono (mono) |
@@ -41,7 +41,11 @@ Section rhythm: Ivory → Dark forest → Ivory → Dark forest → Terracotta C
 - **Starlyn patterns** — when building new components, check Starlyn first at `/Users/tasfiqsunny/Documents/code/WebDev/2026/agency-starlyn/starlyn-agency/src/`. Adapt rather than rewrite.
 - **Tailwind v4** — no `tailwind.config.ts`. All tokens are in `globals.css` `@theme` block.
 - **BetterAuth migrations** — auth tables (`user`, `session`, `account`, `verification`) are in `src/db/auth-schema.ts` and included in `drizzle.config.ts`. Run `npx drizzle-kit generate && npx drizzle-kit migrate` to apply. Do NOT use `@better-auth/cli migrate` — it does not work with Drizzle.
-- **Neon DB** — `drizzle.config.ts` loads `.env.local` via `@next/env`. Always run migrations with `npx drizzle-kit migrate` (no prefix needed).
+- **One `DATABASE_URL`, and it is local** — `drizzle.config.ts` loads `.env.local` via `@next/env`,
+  and dotenv keeps the LAST value for a repeated key. `.env.local` carried both a local and a
+  Neon `DATABASE_URL` from May 2026 until 2026-09-07, so every "local" run wrote to production.
+  Never put a Neon URL in `.env.local`; Vercel supplies it to the deployed app.
+  Always run migrations with `npx drizzle-kit migrate` (no prefix needed).
 - **No comments** unless the WHY is genuinely non-obvious.
 
 ## Running Locally
@@ -53,12 +57,21 @@ npx tsc --noEmit     # type check
 
 ## Database
 
+Development runs Postgres locally in Docker. Two containers can provide it and
+both publish **host port 5437**; only one may run at a time.
+
 ```bash
-npx drizzle-kit generate   # generate migration from schema changes
-npx drizzle-kit migrate    # apply migrations to DB
+docker start mountain-nest-db     # the long-standing standalone container
+# or
+docker compose up -d db           # the compose service, same port
+
+npx drizzle-kit generate          # generate migration from schema changes
+npx drizzle-kit migrate           # apply migrations to DB
 ```
 
-Requires `DATABASE_URL` in `.env.local`. See `.env.example` for format.
+`.env.local` must contain **exactly one** `DATABASE_URL` and it must be the
+local one — see the note in `.env.example`. Production is Neon and is
+configured only through the Vercel dashboard.
 
 ## Deploy (Vercel)
 

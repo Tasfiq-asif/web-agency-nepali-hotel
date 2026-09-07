@@ -32,6 +32,11 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+# ...except the template, which carries no secrets and is the only place the
+# required shape of .env.local is written down. It was ignored and untracked
+# until 2026-09-08, so a fresh clone had no guidance at all — which is part of
+# how .env.local came to hold two DATABASE_URL entries.
+!.env.example
 
 # vercel
 .vercel

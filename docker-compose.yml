@@ -9,7 +9,13 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
-      - "5432:5432"
+      # 5437 on the host, not 5432. Host 5432 is already occupied on the
+      # development machine, and a standalone `mountain-nest-db` container has
+      # published 5437 since 2026-05-19 — which is the port `.env.local` has
+      # always named. This file said 5432, so the two never agreed and
+      # `docker compose up db` could not bind. Only one of the two may run at a
+      # time, which is intended: whichever is up, the app finds it on 5437.
+      - "5437:5432"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U mountain_user -d mountain_nest"]
       interval: 10s
